@@ -1,0 +1,11 @@
+bin
+gen
+build/
+.gradle/
+tmp/
+.DS_Store
+*/proguard/*.txt
+!*/proguard/mapping.txt
+.project
+.settings
+.classpath
