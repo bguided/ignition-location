@@ -6,7 +6,7 @@
     <uses-sdk android:minSdkVersion="4" />
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:name=".LocationActivitySample"
+        <activity android:name=".IgnitedLocationSampleActivity"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -15,4 +15,42 @@
         </activity>
 
     </application>
+    
+    <uses-sdk android:minSdkVersion="4" />
+    
+    <!-- all the following are necessary in order for the ignition-location library to work -->
+    
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <receiver android:name="com.github.ignition.location.receivers.LocationChangedReceiver">
+        <intent-filter>
+            <action android:name="com.github.ignition.location.active_location_update_action" />
+        </intent-filter>
+    </receiver>
+    <receiver android:name="com.github.ignition.location.receivers.PassiveLocationChangedReceiver">
+        <intent-filter>
+            <action android:name="com.github.ignition.location.passive_location_update_action" />
+        </intent-filter>
+    </receiver>
+    <receiver android:name="com.github.ignition.location.receivers.ConnectivityChangedReceiver"
+        enabled="false">
+        <intent-filter>
+            <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+        </intent-filter>
+    </receiver>
+    <receiver android:name="com.github.ignition.location.receivers.PowerStateChangedReceiver">
+        <intent-filter>
+            <action android:name="android.intent.action.ACTION_BATTERY_LOW" />
+            <action android:name="android.intent.action.ACTION_BATTERY_OKAY" />
+        </intent-filter>
+    </receiver>
+    <receiver android:name="com.github.ignition.location.receivers.BootReceiver">
+        <intent-filter>
+            <action android:name="android.intent.action.BOOT_COMPLETED" />
+        </intent-filter>
+    </receiver>
+
 </manifest>
