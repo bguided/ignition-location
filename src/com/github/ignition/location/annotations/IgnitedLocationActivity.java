@@ -7,5 +7,10 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface LocationActivity {
+public @interface IgnitedLocationActivity {
+
+    boolean useGps() default false;
+
+    boolean refreshDataIfLocationChanges() default false;
+
 }
