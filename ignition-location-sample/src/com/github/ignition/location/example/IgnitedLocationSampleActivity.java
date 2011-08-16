@@ -19,17 +19,14 @@ import android.app.ListActivity;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.ListAdapter;
-import android.widget.Toast;
 
 import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.annotations.IgnitedLocationActivity;
-import com.github.ignition.location.templates.IgnitedOnLocationChangedListener;
 
 // Use the @IgnitedLocationActivity annotation to take advantage if the ignition-location 
 // library functionalities.
 @IgnitedLocationActivity(useGps = true, refreshDataIfLocationChanges = true)
-public class IgnitedLocationSampleActivity extends ListActivity implements
-		IgnitedOnLocationChangedListener {
+public class IgnitedLocationSampleActivity extends ListActivity {
 
 	private ListAdapter adapter;
 
