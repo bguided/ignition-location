@@ -16,7 +16,7 @@
  * This code has been modified by Stefano Dacchille.
  */
 
-package com.github.ignition.location.aspects;
+package com.github.ignition.location;
 
 import static com.github.ignition.location.IgnitedLocationActivityConstants.SHARED_PREFERENCE_FILE;
 import static com.github.ignition.location.IgnitedLocationActivityConstants.SP_KEY_FOLLOW_LOCATION_CHANGES;
@@ -38,7 +38,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.github.ignition.location.IgnitedLocationActivityConstants;
 import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.annotations.IgnitedLocationActivity;
 import com.github.ignition.location.templates.ILastLocationFinder;

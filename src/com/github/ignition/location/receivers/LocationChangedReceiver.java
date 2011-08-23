@@ -16,7 +16,7 @@
 
 package com.github.ignition.location.receivers;
 
-import com.github.ignition.location.aspects.IgnitedLocationManager;
+import com.github.ignition.location.IgnitedLocationManager;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -24,7 +24,7 @@ import android.location.LocationManager;
 import android.util.Log;
 
 import com.github.ignition.location.IgnitedLocationActivityConstants;
-import com.github.ignition.location.aspects.IgnitedLocationManager;
+import com.github.ignition.location.IgnitedLocationManager;
 import com.github.ignition.location.utils.LegacyLastLocationFinder;
 
 /**
