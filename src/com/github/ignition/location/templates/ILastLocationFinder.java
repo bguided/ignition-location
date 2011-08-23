@@ -16,6 +16,7 @@
 
 package com.github.ignition.location.templates;
 
+import android.content.BroadcastReceiver;
 import android.location.Location;
 import android.location.LocationListener;
 
@@ -54,4 +55,7 @@ public interface ILastLocationFinder {
    * Cancel the one-shot current location update.
    */
   public void cancel();
+
+  public BroadcastReceiver getSingleUpdateReceiver();
+
 }
