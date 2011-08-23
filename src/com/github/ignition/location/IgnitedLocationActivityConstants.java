@@ -93,6 +93,6 @@ public class IgnitedLocationActivityConstants {
     public static boolean SUPPORTS_HONEYCOMB = android.os.Build.VERSION.SDK_INT >= 11;
     public static boolean SUPPORTS_FROYO = android.os.Build.VERSION.SDK_INT >= 8;
 
-    public static String CONSTRUCTED_LOCATION_PROVIDER = "CONSTRUCTED_LOCATION_PROVIDER";
+    public static String IGNITED_LOCATION_PROVIDER = "ignited_location_provider";
 
 }

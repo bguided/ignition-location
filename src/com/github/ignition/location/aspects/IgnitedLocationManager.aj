@@ -34,6 +34,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -48,306 +49,309 @@ import com.github.ignition.location.utils.PlatformSpecificImplementationFactory;
 @SuppressAjWarnings
 public aspect IgnitedLocationManager {
 
-	public static final String LOG_TAG = IgnitedLocationManager.class
-			.getSimpleName();
+    public static final String LOG_TAG = IgnitedLocationManager.class
+            .getSimpleName();
 
-	declare parents : (@IgnitedLocationActivity *) implements IgnitedOnLocationChangedListener;
+    declare parents : (@IgnitedLocationActivity *) implements IgnitedOnLocationChangedListener;
 
-	protected Criteria criteria;
+    protected Criteria criteria;
 
-	protected ILastLocationFinder lastLocationFinder;
+    protected ILastLocationFinder lastLocationFinder;
 
-	protected LocationUpdateRequester locationUpdateRequester;
+    protected LocationUpdateRequester locationUpdateRequester;
 
-	protected PendingIntent locationListenerPendingIntent,
-			locationListenerPassivePendingIntent;
+    protected PendingIntent locationListenerPendingIntent,
+            locationListenerPassivePendingIntent;
 
-	protected LocationManager locationManager;
+    protected LocationManager locationManager;
 
-	protected IgnitedLocationActivity locationAnnotation;
+    protected IgnitedLocationActivity locationAnnotation;
 
-	private Activity activity;
+    private Activity activity;
 
-	private static volatile Location currentLocation;
+    private static volatile Location currentLocation;
 
-	private boolean refreshDataIfLocationChanges;
+    private boolean refreshDataIfLocationChanges;
 
-	/**
-	 * One-off location listener that receives updates from the
-	 * {@link LastLocationFinder}. This is triggered where the last known
-	 * location is outside the bounds of our maximum distance and latency.
-	 */
-	protected LocationListener oneShotLastLocationUpdateListener = new LocationListener() {
-		@Override
-		public void onLocationChanged(Location lastLocation) {
-			currentLocation = lastLocation;
-			((IgnitedOnLocationChangedListener) activity)
-					.onLocationChanged(currentLocation);
-		}
+    /**
+     * One-off location listener that receives updates from the
+     * {@link LastLocationFinder}. This is triggered where the last known
+     * location is outside the bounds of our maximum distance and latency.
+     */
+    protected LocationListener oneShotLastLocationUpdateListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location lastLocation) {
+            currentLocation = lastLocation;
+            ((IgnitedOnLocationChangedListener) activity)
+                    .onLocationChanged(currentLocation);
+        }
 
-		@Override
-		public void onProviderDisabled(String provider) {
-		}
+        @Override
+        public void onProviderDisabled(String provider) {
+        }
 
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-		}
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
 
-		@Override
-		public void onProviderEnabled(String provider) {
-		}
-	};
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+    };
 
-	/**
-	 * If the best Location Provider (usually GPS) is not available when we
-	 * request location updates, this listener will be notified if / when it
-	 * becomes available. It calls requestLocationUpdates to re-register the
-	 * location listeners using the better Location Provider.
-	 */
-	protected LocationListener bestInactiveLocationProviderListener = new LocationListener() {
-		@Override
-		public void onLocationChanged(Location l) {
-		}
+    /**
+     * If the best Location Provider (usually GPS) is not available when we
+     * request location updates, this listener will be notified if / when it
+     * becomes available. It calls requestLocationUpdates to re-register the
+     * location listeners using the better Location Provider.
+     */
+    protected LocationListener bestInactiveLocationProviderListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location l) {
+        }
 
-		@Override
-		public void onProviderDisabled(String provider) {
-		}
+        @Override
+        public void onProviderDisabled(String provider) {
+        }
 
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-		}
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
 
-		@Override
-		public void onProviderEnabled(String provider) {
-			// Re-register the location listeners using the better Location
-			// Provider.
-			requestLocationUpdates();
-		}
-	};
+        @Override
+        public void onProviderEnabled(String provider) {
+            // Re-register the location listeners using the better Location
+            // Provider.
+            requestLocationUpdates();
+        }
+    };
 
-	/**
-	 * If the Location Provider we're using to receive location updates is
-	 * disabled while the app is running, this Receiver will be notified,
-	 * allowing us to re-register our Location Receivers using the best
-	 * available Location Provider is still available.
-	 */
-	protected BroadcastReceiver locProviderDisabledReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			boolean providerDisabled = !intent.getBooleanExtra(
-					LocationManager.KEY_PROVIDER_ENABLED, false);
-			// Re-register the location listeners using the best available
-			// Location Provider.
-			if (providerDisabled) {
-				requestLocationUpdates();
-			}
-		}
-	};
+    /**
+     * If the Location Provider we're using to receive location updates is
+     * disabled while the app is running, this Receiver will be notified,
+     * allowing us to re-register our Location Receivers using the best
+     * available Location Provider is still available.
+     */
+    protected BroadcastReceiver locProviderDisabledReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean providerDisabled = !intent.getBooleanExtra(
+                    LocationManager.KEY_PROVIDER_ENABLED, false);
+            // Re-register the location listeners using the best available
+            // Location Provider.
+            if (providerDisabled) {
+                requestLocationUpdates();
+            }
+        }
+    };
 
-	after() : execution(* onCreate(..)) && @this(IgnitedLocationActivity) {
-		activity = (Activity) thisJoinPoint.getThis();
-		locationAnnotation = activity.getClass().getAnnotation(
-				IgnitedLocationActivity.class);
+    after() : execution(* onCreate(..)) && @this(IgnitedLocationActivity) {
+        activity = (Activity) thisJoinPoint.getThis();
+        locationAnnotation = activity.getClass().getAnnotation(
+                IgnitedLocationActivity.class);
 
-		refreshDataIfLocationChanges = locationAnnotation
-				.refreshDataIfLocationChanges();
-		SharedPreferences prefs = activity.getSharedPreferences(
-				SHARED_PREFERENCE_FILE, Context.MODE_PRIVATE);
-		prefs.edit()
-				.putBoolean(SP_KEY_FOLLOW_LOCATION_CHANGES,
-						refreshDataIfLocationChanges).commit();
+        refreshDataIfLocationChanges = locationAnnotation
+                .refreshDataIfLocationChanges();
+        SharedPreferences prefs = activity.getSharedPreferences(
+                SHARED_PREFERENCE_FILE, Context.MODE_PRIVATE);
+        prefs.edit()
+                .putBoolean(SP_KEY_FOLLOW_LOCATION_CHANGES,
+                        refreshDataIfLocationChanges).commit();
 
-		// Get references to the managers
-		locationManager = (LocationManager) activity
-				.getSystemService(Context.LOCATION_SERVICE);
-		// Specify the Criteria to use when requesting location updates while
-		// the application is Active
-		criteria = new Criteria();
-		if (locationAnnotation.useGps()) {
-			criteria.setAccuracy(Criteria.ACCURACY_FINE);
-		} else {
-			criteria.setPowerRequirement(Criteria.POWER_LOW);
-		}
+        // Get references to the managers
+        locationManager = (LocationManager) activity
+                .getSystemService(Context.LOCATION_SERVICE);
+        // Specify the Criteria to use when requesting location updates while
+        // the application is Active
+        criteria = new Criteria();
+        if (locationAnnotation.useGps()) {
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        } else {
+            criteria.setPowerRequirement(Criteria.POWER_LOW);
+        }
 
-		// Setup the location update Pending Intents
-		Intent activeIntent = new Intent(
-				IgnitedLocationActivityConstants.ACTIVE_LOCATION_UPDATE_ACTION);
-		locationListenerPendingIntent = PendingIntent.getBroadcast(activity, 0,
-				activeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Setup the location update Pending Intents
+        Intent activeIntent = new Intent(
+                IgnitedLocationActivityConstants.ACTIVE_LOCATION_UPDATE_ACTION);
+        locationListenerPendingIntent = PendingIntent.getBroadcast(activity, 0,
+                activeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		Intent passiveIntent = new Intent(
-				IgnitedLocationActivityConstants.PASSIVE_LOCATION_UPDATE_ACTION);
-		locationListenerPassivePendingIntent = PendingIntent.getBroadcast(
-				activity, 0, passiveIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent passiveIntent = new Intent(
+                IgnitedLocationActivityConstants.PASSIVE_LOCATION_UPDATE_ACTION);
+        locationListenerPassivePendingIntent = PendingIntent.getBroadcast(
+                activity, 0, passiveIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		// Instantiate a LastLocationFinder class. This will be used to find the
-		// last known location when the application starts.
-		lastLocationFinder = PlatformSpecificImplementationFactory
-				.getLastLocationFinder(activity);
-		lastLocationFinder
-				.setChangedLocationListener(oneShotLastLocationUpdateListener);
+        // Instantiate a LastLocationFinder class. This will be used to find the
+        // last known location when the application starts.
+        lastLocationFinder = PlatformSpecificImplementationFactory
+                .getLastLocationFinder(activity);
+        lastLocationFinder
+                .setChangedLocationListener(oneShotLastLocationUpdateListener);
 
-		// Instantiate a Location Update Requester class based on the available
-		// platform version. This will be used to request location updates.
-		locationUpdateRequester = PlatformSpecificImplementationFactory
-				.getLocationUpdateRequester(locationManager);
+        // Instantiate a Location Update Requester class based on the available
+        // platform version. This will be used to request location updates.
+        locationUpdateRequester = PlatformSpecificImplementationFactory
+                .getLocationUpdateRequester(activity.getApplicationContext());
 
-	}
+    }
 
-	after() : execution(* onResume()) && @this(IgnitedLocationActivity) {
-		// Get the last known location (and optionally request location updates)
-		// and refresh the data.
-		// boolean followLocationChanges =
-		// prefs.getBoolean(PlacesConstants.SP_KEY_FOLLOW_LOCATION_CHANGES,
-		// true);
-		// getLocationAndUpdatePlaces(followLocationChanges);
+    after() : execution(* onResume()) && @this(IgnitedLocationActivity) {
+        // Get the last known location (and optionally request location updates)
+        // and refresh the data.
+        // boolean followLocationChanges =
+        // prefs.getBoolean(PlacesConstants.SP_KEY_FOLLOW_LOCATION_CHANGES,
+        // true);
+        // getLocationAndUpdatePlaces(followLocationChanges);
 
-		// This isn't directly affecting the UI, so put it on a worker thread.
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				getLocationAndNotifyActivity();
-			}
-		}).start();
+        // This isn't directly affecting the UI, so put it on a worker thread.
+        new AsyncTask<Void, Void, Location>() {
+            
+            protected Location doInBackground(Void... params) {
+                return getLastKnownLocation();
+            }
 
-	}
+            @Override
+            protected void onPostExecute(Location lastKnownLocation) {
+                currentLocation = lastKnownLocation;
+                Log.d(LOG_TAG,
+                        "New Location (lat, long): "
+                                + currentLocation.getLatitude() + ", "
+                                + currentLocation.getLongitude());
+                ((IgnitedOnLocationChangedListener) activity)
+                        .onLocationChanged(currentLocation);
 
-	after() : execution(* onPause()) && @this(IgnitedLocationActivity) {
-		disableLocationUpdates();
-	}
+                // If we have requested location updates, turn them on here.
+                toggleUpdatesWhenLocationChanges();
+            }
+        }.execute();
 
-	after() : execution(* onDestroy()) && @this(IgnitedLocationActivity) {
-		activity = null;
-	}
+    }
 
-	Location around() : get(@IgnitedLocation Location *.*) {
-		return currentLocation;
-	}
+    after() : execution(* onPause()) && @this(IgnitedLocationActivity) {
+        disableLocationUpdates();
+    }
 
-	/**
-	 * Start listening for location updates.
-	 */
-	protected void requestLocationUpdates() {
-		Log.d(LOG_TAG, "request location updates");
-		// Normal updates while activity is visible.
-		locationUpdateRequester.requestLocationUpdates(
-				IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME,
-				IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE,
-				criteria, locationListenerPendingIntent);
+    after() : execution(* onDestroy()) && @this(IgnitedLocationActivity) {
+        activity = null;
+    }
 
-		// Passive location updates from 3rd party apps when the Activity isn't
-		// visible.
-		locationUpdateRequester.requestPassiveLocationUpdates(
-				IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME,
-				IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE,
-				locationListenerPassivePendingIntent);
+    Location around() : get(@IgnitedLocation Location *.*) {
+        return currentLocation;
+    }
 
-		// Register a receiver that listens for when the provider I'm using has
-		// been disabled.
-		IntentFilter intentFilter = new IntentFilter(
-				IgnitedLocationActivityConstants.ACTIVE_LOCATION_UPDATE_ACTION);
-		activity.registerReceiver(locProviderDisabledReceiver, intentFilter);
+    /**
+     * Start listening for location updates.
+     */
+    protected void requestLocationUpdates() {
+        Log.d(LOG_TAG, "requesting location updates...");
+        // Normal updates while activity is visible.
+        locationUpdateRequester.requestLocationUpdates(
+                IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME,
+                IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE,
+                criteria, locationListenerPendingIntent);
 
-		// Register a receiver that listens for when a better provider than I'm
-		// using becomes available.
-		String bestProvider = locationManager.getBestProvider(criteria, false);
-		String bestAvailableProvider = locationManager.getBestProvider(
-				criteria, true);
-		if (bestProvider != null && !bestProvider.equals(bestAvailableProvider)) {
-			locationManager.requestLocationUpdates(bestProvider, 0, 0,
-					bestInactiveLocationProviderListener,
-					activity.getMainLooper());
-		}
-	}
+        // Passive location updates from 3rd party apps when the Activity isn't
+        // visible.
+        locationUpdateRequester.requestPassiveLocationUpdates(
+                IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME,
+                IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE,
+                locationListenerPassivePendingIntent);
 
-	/**
-	 * Stop listening for location updates
-	 */
-	protected void disableLocationUpdates() {
-		Log.d(LOG_TAG, "disable location updates");
-		activity.unregisterReceiver(locProviderDisabledReceiver);
-		locationManager.removeUpdates(locationListenerPendingIntent);
-		locationManager.removeUpdates(bestInactiveLocationProviderListener);
-		boolean finishing = activity.isFinishing();
+        // Register a receiver that listens for when the provider I'm using has
+        // been disabled.
+        IntentFilter intentFilter = new IntentFilter(
+                IgnitedLocationActivityConstants.ACTIVE_LOCATION_UPDATE_ACTION);
+        activity.registerReceiver(locProviderDisabledReceiver, intentFilter);
 
-		if (finishing) {
-			lastLocationFinder.cancel();
-		}
-		if (IgnitedLocationActivityConstants.DISABLE_PASSIVE_LOCATION_WHEN_USER_EXIT
-				&& finishing) {
-			locationManager.removeUpdates(locationListenerPassivePendingIntent);
-		}
-	}
+        // Register a receiver that listens for when a better provider than I'm
+        // using becomes available.
+        String bestProvider = locationManager.getBestProvider(criteria, false);
+        String bestAvailableProvider = locationManager.getBestProvider(
+                criteria, true);
+        if (bestProvider != null && !bestProvider.equals(bestAvailableProvider)) {
+            locationManager.requestLocationUpdates(bestProvider, 0, 0,
+                    bestInactiveLocationProviderListener,
+                    activity.getMainLooper());
+        }
+    }
 
-	/**
-	 * Returns the current location
-	 * 
-	 * NB: Don't call this method in your Activity but use the @IgnitedLocation
-	 * annotation
-	 * 
-	 * @return the current location
-	 */
-	public static Location getCurrentLocation() {
-		return currentLocation;
-	}
+    /**
+     * Stop listening for location updates
+     */
+    protected void disableLocationUpdates() {
+        Log.d(LOG_TAG, "...disabling location updates");
+        activity.unregisterReceiver(locProviderDisabledReceiver);
+        locationManager.removeUpdates(locationListenerPendingIntent);
+        locationManager.removeUpdates(bestInactiveLocationProviderListener);
+        boolean finishing = activity.isFinishing();
 
-	/**
-	 * Sets the current location.
-	 * 
-	 * NB: Don't call this method in your Activity. Ignition will take care to
-	 * update the current location.
-	 * 
-	 * @param currentLocation
-	 */
-	public static void setCurrentLocation(Location currentLocation) {
-		IgnitedLocationManager.currentLocation = currentLocation;
-	}
+//        if (finishing) {
+        lastLocationFinder.cancel();
+//        }
+        if (IgnitedLocationActivityConstants.DISABLE_PASSIVE_LOCATION_WHEN_USER_EXIT
+                && finishing) {
+            locationManager.removeUpdates(locationListenerPassivePendingIntent);
+        }
+    }
 
-	/**
-	 * Find the last known location (using a {@link LastLocationFinder}) and
-	 * updates the place list accordingly.
-	 * 
-	 */
-	protected void getLocationAndNotifyActivity() {
-		// Find the last known location, specifying a required accuracy
-		// of within the min distance between updates
-		// and a required latency of the minimum time required between
-		// updates.
-		Location lastKnownLocation = IgnitedLocationManager.this.lastLocationFinder
-				.getLastBestLocation(
-						IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE,
-						System.currentTimeMillis()
-								- IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME);
+    /**
+     * Returns the current location
+     * 
+     * NB: Don't call this method in your Activity but use the @IgnitedLocation
+     * annotation
+     * 
+     * @return the current location
+     */
+    public static Location getCurrentLocation() {
+        return currentLocation;
+    }
 
-		currentLocation = lastKnownLocation;
-		((IgnitedOnLocationChangedListener) activity)
-				.onLocationChanged(currentLocation);
-		Log.d(LOG_TAG,
-				"New Location (lat, long): " + currentLocation.getLatitude()
-						+ ", " + currentLocation.getLongitude());
+    /**
+     * Sets the current location.
+     * 
+     * NB: Don't call this method in your Activity. Ignition will take care to
+     * update the current location.
+     * 
+     * @param currentLocation
+     */
+    public static void setCurrentLocation(Location currentLocation) {
+        IgnitedLocationManager.currentLocation = currentLocation;
+    }
 
-		// If we have requested location updates, turn them on here.
-		toggleUpdatesWhenLocationChanges();
-	}
+    /**
+     * Find the last known location (using a {@link LastLocationFinder}) and
+     * updates the place list accordingly.
+     * 
+     */
+    protected Location getLastKnownLocation() {
+        // Find the last known location, specifying a required accuracy
+        // of within the min distance between updates
+        // and a required latency of the minimum time required between
+        // updates.
+        Location lastKnownLocation = IgnitedLocationManager.this.lastLocationFinder
+                .getLastBestLocation(
+                        IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE,
+                        System.currentTimeMillis()
+                                - IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME);
 
-	/**
-	 * Choose if we should receive location updates.
-	 * 
-	 * @param updateWhenLocationChanges
-	 *            Request location updates
-	 */
-	protected void toggleUpdatesWhenLocationChanges() {
-		// Save the location update status in shared preferences
-		// this.prefsEditor.putBoolean(
-		// PlacesConstants.SP_KEY_FOLLOW_LOCATION_CHANGES,
-		// updateWhenLocationChanges);
-		// this.sharedPreferenceSaver.savePreferences(this.prefsEditor, true);
+        return lastKnownLocation;
+    }
 
-		// Start or stop listening for location changes
-		if (refreshDataIfLocationChanges) {
-			requestLocationUpdates();
-		} else {
-			disableLocationUpdates();
-		}
-	}
+    /**
+     * Choose if we should receive location updates.
+     */
+    protected void toggleUpdatesWhenLocationChanges() {
+        // Save the location update status in shared preferences
+        // this.prefsEditor.putBoolean(
+        // PlacesConstants.SP_KEY_FOLLOW_LOCATION_CHANGES,
+        // updateWhenLocationChanges);
+        // this.sharedPreferenceSaver.savePreferences(this.prefsEditor, true);
+
+        // Start or stop listening for location changes
+        if (refreshDataIfLocationChanges) {
+            requestLocationUpdates();
+        } else {
+            disableLocationUpdates();
+        }
+    }
 }

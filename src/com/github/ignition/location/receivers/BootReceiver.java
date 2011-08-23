@@ -24,7 +24,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.LocationManager;
 
 import com.github.ignition.location.IgnitedLocationActivityConstants;
 import com.github.ignition.location.templates.LocationUpdateRequester;
@@ -37,40 +36,37 @@ import com.github.ignition.location.utils.PlatformSpecificImplementationFactory;
  * enabled after a reboot.
  */
 public class BootReceiver extends BroadcastReceiver {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        SharedPreferences prefs = context.getSharedPreferences(
-                SHARED_PREFERENCE_FILE, Context.MODE_PRIVATE);
-        boolean runOnce = prefs.getBoolean(SP_KEY_RUN_ONCE, false);
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		SharedPreferences prefs = context.getSharedPreferences(
+				SHARED_PREFERENCE_FILE, Context.MODE_PRIVATE);
+		boolean runOnce = prefs.getBoolean(SP_KEY_RUN_ONCE, false);
 
-        if (runOnce) {
-            LocationManager locationManager = (LocationManager) context
-                    .getSystemService(Context.LOCATION_SERVICE);
+		if (runOnce) {
+			// Instantiate a Location Update Requester class based on the
+			// available platform version.
+			// This will be used to request location updates.
+			LocationUpdateRequester locationUpdateRequester = PlatformSpecificImplementationFactory
+					.getLocationUpdateRequester(context.getApplicationContext());
 
-            // Instantiate a Location Update Requester class based on the
-            // available platform version.
-            // This will be used to request location updates.
-            LocationUpdateRequester locationUpdateRequester = PlatformSpecificImplementationFactory
-                    .getLocationUpdateRequester(locationManager);
+			// Check the Shared Preferences to see if we are updating location
+			// changes.
+			boolean followLocationChanges = prefs.getBoolean(
+					SP_KEY_FOLLOW_LOCATION_CHANGES, true);
 
-            // Check the Shared Preferences to see if we are updating location
-            // changes.
-            boolean followLocationChanges = prefs
-                    .getBoolean(SP_KEY_FOLLOW_LOCATION_CHANGES, true);
-
-            if (followLocationChanges) {
-                // Passive location updates from 3rd party apps when the
-                // Activity isn't visible.
-                Intent passiveIntent = new Intent(
-                        IgnitedLocationActivityConstants.PASSIVE_LOCATION_UPDATE_ACTION);
-                PendingIntent locationListenerPassivePendingIntent = PendingIntent
-                        .getBroadcast(context, 0, passiveIntent,
-                                PendingIntent.FLAG_UPDATE_CURRENT);
-                locationUpdateRequester.requestPassiveLocationUpdates(
-                        IgnitedLocationActivityConstants.PASSIVE_MAX_TIME,
-                        IgnitedLocationActivityConstants.PASSIVE_MAX_DISTANCE,
-                        locationListenerPassivePendingIntent);
-            }
-        }
-    }
+			if (followLocationChanges) {
+				// Passive location updates from 3rd party apps when the
+				// Activity isn't visible.
+				Intent passiveIntent = new Intent(
+						IgnitedLocationActivityConstants.PASSIVE_LOCATION_UPDATE_ACTION);
+				PendingIntent locationListenerPassivePendingIntent = PendingIntent
+						.getBroadcast(context, 0, passiveIntent,
+								PendingIntent.FLAG_UPDATE_CURRENT);
+				locationUpdateRequester.requestPassiveLocationUpdates(
+						IgnitedLocationActivityConstants.PASSIVE_MAX_TIME,
+						IgnitedLocationActivityConstants.PASSIVE_MAX_DISTANCE,
+						locationListenerPassivePendingIntent);
+			}
+		}
+	}
 }
