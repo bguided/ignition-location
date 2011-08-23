@@ -15,10 +15,13 @@
 
 package com.github.ignition.location.example;
 
+import java.util.ArrayList;
+
 import android.app.ListActivity;
 import android.location.Location;
 import android.os.Bundle;
-import android.widget.ListAdapter;
+import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.annotations.IgnitedLocationActivity;
@@ -28,58 +31,56 @@ import com.github.ignition.location.annotations.IgnitedLocationActivity;
 @IgnitedLocationActivity(useGps = true, refreshDataIfLocationChanges = true)
 public class IgnitedLocationSampleActivity extends ListActivity {
 
-	private ListAdapter adapter;
+    private ArrayAdapter<Location> adapter;
 
-	// Use the IgniteLocation annotation to get the most recent location.
-	@IgnitedLocation
-	private Location currentLocation;
+    // Use the IgniteLocation annotation to get the most recent location.
+    @IgnitedLocation
+    private Location currentLocation;
 
-	// Make sure the onCreate() method is overridden in your Activity or
-	// the ignition-location library won't work properly
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+    // Make sure the onCreate() method is overridden in your Activity or
+    // the ignition-location library won't work properly
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
 
-		// TODO ...
-		setListAdapter(this.adapter);
+        adapter = new ArrayAdapter<Location>(this,
+                android.R.layout.activity_list_item, android.R.id.text1);
+        setListAdapter(this.adapter);
+    }
 
-		Location location = new Location("");
-		location.getAccuracy();
-	}
+    // Make sure the onResume() method is overridden in your Activity or
+    // the ignition-location library won't work properly
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
-	// Make sure the onResume() method is overridden in your Activity or
-	// the ignition-location library won't work properly
-	@Override
-	protected void onResume() {
-		super.onResume();
-	}
+    // Make sure the onPause() method is overridden in your Activity or
+    // the ignition-location library won't work properly
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
-	// Make sure the onPause() method is overridden in your Activity or
-	// the ignition-location library won't work properly
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
+    // Make sure the onDestroy() method is overridden in your Activity or
+    // the ignition-location library won't work properly
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
-	// Make sure the onDestroy() method is overridden in your Activity or
-	// the ignition-location library won't work properly
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-	}
+    // This callback is called every time the Location Manager has got a new
+    // location. Use it to update you geo-sensible data.
+    @Override
+    public void onLocationChanged(Location newLocation) {
+        refreshData();
+    }
 
-	// This callback is called every time the Location Manager has got a new
-	// location. Use it to update you geo-sensible data.
-	@Override
-	public void onLocationChanged(Location newLocation) {
-		refreshData();
-	}
-
-	public void refreshData() {
-		// TODO ...
-		final double latitude = currentLocation.getLatitude();
-		double longitude = currentLocation.getLongitude();
-	}
+    public void refreshData() {
+        Log.d(IgnitedLocationSampleActivity.class.getSimpleName(),
+                currentLocation.toString());
+        adapter.add(currentLocation);
+    }
 
 }
