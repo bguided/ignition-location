@@ -280,10 +280,6 @@ public aspect IgnitedLocationManager {
     protected void disableLocationUpdates() {
         Log.d(LOG_TAG, "...disabling location updates");
         activity.unregisterReceiver(locProviderDisabledReceiver);
-        final BroadcastReceiver singleUpdateReceiver = lastLocationFinder.getSingleUpdateReceiver();
-        if (singleUpdateReceiver != null) {
-            activity.unregisterReceiver(singleUpdateReceiver);
-        }
         locationManager.removeUpdates(locationListenerPendingIntent);
         locationManager.removeUpdates(bestInactiveLocationProviderListener);
         boolean finishing = activity.isFinishing();

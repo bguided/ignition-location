@@ -119,9 +119,11 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
         }
 
         // If the best result is beyond the allowed time limit, or the accuracy
-        // of the best result is wider than the acceptable maximum distance, request a
+        // of the
+        // best result is wider than the acceptable maximum distance, request a
         // single update.
-        // This check simply implements the same conditions we set when requesting regular
+        // This check simply implements the same conditions we set when
+        // requesting regular
         // location updates every [minTime] and [minDistance].
         if ((this.locationListener != null)
                 && ((bestTime < minTime) || (bestAccuracy > minDistance))) {
@@ -175,10 +177,5 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
     @Override
     public void cancel() {
         this.locationManager.removeUpdates(this.singleUpatePI);
-    }
-    
-    @Override
-    public BroadcastReceiver getSingleUpdateReceiver() {
-        return this.singleUpdateReceiver;
     }
 }

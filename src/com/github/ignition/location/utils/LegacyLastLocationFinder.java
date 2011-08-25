@@ -18,7 +18,6 @@ package com.github.ignition.location.utils;
 
 import java.util.List;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
@@ -177,10 +176,5 @@ public class LegacyLastLocationFinder implements ILastLocationFinder {
     @Override
     public void cancel() {
         this.locationManager.removeUpdates(this.singeUpdateListener);
-    }
-
-    @Override
-    public BroadcastReceiver getSingleUpdateReceiver() {
-        return null;
     }
 }
