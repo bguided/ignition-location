@@ -27,6 +27,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.util.Log;
 
 import com.github.ignition.location.templates.ILastLocationFinder;
 
@@ -127,6 +128,7 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
         // location updates every [minTime] and [minDistance].
         if ((this.locationListener != null)
                 && ((bestTime < minTime) || (bestAccuracy > minDistance))) {
+            Log.d(TAG, "Last location is too old. Retrieving a new one...");
             IntentFilter locIntentFilter = new IntentFilter(
                     SINGLE_LOCATION_UPDATE_ACTION);
             this.context.registerReceiver(this.singleUpdateReceiver,
@@ -152,6 +154,8 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
             String key = LocationManager.KEY_LOCATION_CHANGED;
             Location location = (Location) intent.getExtras().get(key);
 
+            Log.d(TAG, "...just got a brand new location (lat, long): " + 
+            location.getLatitude() + ", " + location.getLongitude() + " .");
             if ((GingerbreadLastLocationFinder.this.locationListener != null)
                     && (location != null)) {
                 GingerbreadLastLocationFinder.this.locationListener
