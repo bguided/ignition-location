@@ -67,7 +67,7 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
         // The calling Activity will likely (or have already) request ongoing
         // updates using the Fine location provider.
         this.criteria = new Criteria();
-        this.criteria.setAccuracy(Criteria.ACCURACY_LOW);
+        this.criteria.setAccuracy(Criteria.ACCURACY_COARSE);
 
         // Construct the Pending Intent that will be broadcast by the oneshot
         // location update.
