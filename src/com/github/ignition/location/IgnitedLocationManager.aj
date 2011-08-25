@@ -284,9 +284,9 @@ public aspect IgnitedLocationManager {
         locationManager.removeUpdates(bestInactiveLocationProviderListener);
         boolean finishing = activity.isFinishing();
 
-//        if (finishing) {
-        lastLocationFinder.cancel();
-//        }
+        if (finishing) {
+            lastLocationFinder.cancel();
+        }
         if (IgnitedLocationActivityConstants.DISABLE_PASSIVE_LOCATION_WHEN_USER_EXIT
                 && finishing) {
             locationManager.removeUpdates(locationListenerPassivePendingIntent);
