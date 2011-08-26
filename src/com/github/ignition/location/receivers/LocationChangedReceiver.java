@@ -16,8 +16,6 @@
 
 package com.github.ignition.location.receivers;
 
-import com.github.ignition.location.IgnitedLocationManager;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,14 +23,19 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 
+import com.github.ignition.location.annotations.IgnitedLocation;
+
 /**
  * This Receiver class is used to listen for Broadcast Intents that announce
  * that a location change has occurred. This is used instead of a
  * LocationListener within an Activity is our only action is to start a service.
  */
 public class LocationChangedReceiver extends BroadcastReceiver {
+    @IgnitedLocation
+    Location currentLocation;
 
-    protected static String LOG_TAG = LocationChangedReceiver.class.getSimpleName();
+    protected static String LOG_TAG = LocationChangedReceiver.class
+            .getSimpleName();
 
     /**
      * When a new location is received, extract it from the Intent and use it to
@@ -46,11 +49,11 @@ public class LocationChangedReceiver extends BroadcastReceiver {
         String key = LocationManager.KEY_LOCATION_CHANGED;
         if (intent.hasExtra(key)) {
             Location location = (Location) intent.getExtras().get(key);
-            IgnitedLocationManager.setCurrentLocation(location);
+            currentLocation = location;
             Log.d(LOG_TAG,
-                    "Actively Updating place list for: "
-                            + location.getLatitude() + ","
-                            + location.getLongitude());
+                    "Actively updating location. New location (lat, long): "
+                            + currentLocation.getLatitude() + ", "
+                            + currentLocation.getLongitude());
         }
     }
 }

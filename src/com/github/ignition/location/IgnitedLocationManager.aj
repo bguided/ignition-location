@@ -239,6 +239,12 @@ public aspect IgnitedLocationManager {
     Location around() : get(@IgnitedLocation Location *.*) {
         return currentLocation;
     }
+    
+    void around(Location freshLocation) : set(@IgnitedLocation Location *.*)
+        && args(freshLocation) 
+        && within(com.github.ignition.location.receivers.*) {
+        currentLocation = freshLocation;
+    }
 
     /**
      * Start listening for location updates.
@@ -293,30 +299,6 @@ public aspect IgnitedLocationManager {
                 && finishing) {
             locationManager.removeUpdates(locationListenerPassivePendingIntent);
         }
-    }
-
-    /**
-     * Returns the current location
-     * 
-     * NB: Don't call this method in your Activity but use the @IgnitedLocation
-     * annotation
-     * 
-     * @return the current location
-     */
-    public static Location getCurrentLocation() {
-        return currentLocation;
-    }
-
-    /**
-     * Sets the current location.
-     * 
-     * NB: Don't call this method in your Activity. Ignition will take care to
-     * update the current location.
-     * 
-     * @param currentLocation
-     */
-    public static void setCurrentLocation(Location currentLocation) {
-        IgnitedLocationManager.currentLocation = currentLocation;
     }
 
     /**
