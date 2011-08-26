@@ -40,6 +40,7 @@ import android.util.Log;
 
 import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.annotations.IgnitedLocationActivity;
+import com.github.ignition.location.annotations.IgnitedLocationService;
 import com.github.ignition.location.templates.ILastLocationFinder;
 import com.github.ignition.location.templates.IgnitedOnLocationChangedListener;
 import com.github.ignition.location.templates.LocationUpdateRequester;
@@ -52,6 +53,8 @@ public aspect IgnitedLocationManager {
             .getSimpleName();
 
     declare parents : (@IgnitedLocationActivity *) implements IgnitedOnLocationChangedListener;
+
+    declare parents : (@IgnitedLocationService *) implements IgnitedOnLocationChangedListener;
 
     protected Criteria criteria;
 
@@ -206,6 +209,7 @@ public aspect IgnitedLocationManager {
         // This isn't directly affecting the UI, so put it on a worker thread.
         new AsyncTask<Void, Void, Location>() {
             
+            @Override
             protected Location doInBackground(Void... params) {
                 return getLastKnownLocation();
             }
