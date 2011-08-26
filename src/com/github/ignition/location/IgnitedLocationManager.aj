@@ -66,7 +66,7 @@ public aspect IgnitedLocationManager {
 
     protected IgnitedLocationActivity locationAnnotation;
 
-    private Activity activity;
+    private Context context;
 
     private static volatile Location currentLocation;
 
@@ -81,8 +81,9 @@ public aspect IgnitedLocationManager {
         @Override
         public void onLocationChanged(Location lastLocation) {
             currentLocation = lastLocation;
-            ((IgnitedOnLocationChangedListener) activity)
-                    .onLocationChanged(currentLocation);
+            if (context != null) {
+                ((IgnitedOnLocationChangedListener) context).onLocationChanged(currentLocation);
+            }
         }
 
         @Override
@@ -145,20 +146,20 @@ public aspect IgnitedLocationManager {
     };
 
     after() : execution(* onCreate(..)) && @this(IgnitedLocationActivity) {
-        activity = (Activity) thisJoinPoint.getThis();
-        locationAnnotation = activity.getClass().getAnnotation(
+        context = (Context) thisJoinPoint.getThis();
+        locationAnnotation = context.getClass().getAnnotation(
                 IgnitedLocationActivity.class);
 
         refreshDataIfLocationChanges = locationAnnotation
                 .refreshDataIfLocationChanges();
-        SharedPreferences prefs = activity.getSharedPreferences(
+        SharedPreferences prefs = context.getSharedPreferences(
                 SHARED_PREFERENCE_FILE, Context.MODE_PRIVATE);
         prefs.edit()
                 .putBoolean(SP_KEY_FOLLOW_LOCATION_CHANGES,
                         refreshDataIfLocationChanges).commit();
 
         // Get references to the managers
-        locationManager = (LocationManager) activity
+        locationManager = (LocationManager) context
                 .getSystemService(Context.LOCATION_SERVICE);
         // Specify the Criteria to use when requesting location updates while
         // the application is Active
@@ -172,25 +173,25 @@ public aspect IgnitedLocationManager {
         // Setup the location update Pending Intents
         Intent activeIntent = new Intent(
                 IgnitedLocationActivityConstants.ACTIVE_LOCATION_UPDATE_ACTION);
-        locationListenerPendingIntent = PendingIntent.getBroadcast(activity, 0,
+        locationListenerPendingIntent = PendingIntent.getBroadcast(context, 0,
                 activeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent passiveIntent = new Intent(
                 IgnitedLocationActivityConstants.PASSIVE_LOCATION_UPDATE_ACTION);
         locationListenerPassivePendingIntent = PendingIntent.getBroadcast(
-                activity, 0, passiveIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                context, 0, passiveIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Instantiate a LastLocationFinder class. This will be used to find the
         // last known location when the application starts.
         lastLocationFinder = PlatformSpecificImplementationFactory
-                .getLastLocationFinder(activity);
+                .getLastLocationFinder(context.getApplicationContext());
         lastLocationFinder
                 .setChangedLocationListener(oneShotLastLocationUpdateListener);
 
         // Instantiate a Location Update Requester class based on the available
         // platform version. This will be used to request location updates.
         locationUpdateRequester = PlatformSpecificImplementationFactory
-                .getLocationUpdateRequester(activity.getApplicationContext());
+                .getLocationUpdateRequester(context.getApplicationContext());
 
     }
 
@@ -213,12 +214,13 @@ public aspect IgnitedLocationManager {
             protected void onPostExecute(Location lastKnownLocation) {
                 currentLocation = lastKnownLocation;
                 Log.d(LOG_TAG,
-                        "New Location (lat, long): "
+                        "Last known location (lat, long): "
                                 + currentLocation.getLatitude() + ", "
                                 + currentLocation.getLongitude());
-                ((IgnitedOnLocationChangedListener) activity)
-                        .onLocationChanged(currentLocation);
-
+                if (context != null) {
+                    ((IgnitedOnLocationChangedListener) context)
+                            .onLocationChanged(currentLocation);
+                }
                 // If we have requested location updates, turn them on here.
                 toggleUpdatesWhenLocationChanges();
             }
@@ -231,7 +233,7 @@ public aspect IgnitedLocationManager {
     }
 
     after() : execution(* onDestroy()) && @this(IgnitedLocationActivity) {
-        activity = null;
+        context = null;
     }
 
     Location around() : get(@IgnitedLocation Location *.*) {
@@ -260,7 +262,7 @@ public aspect IgnitedLocationManager {
         // been disabled.
         IntentFilter intentFilter = new IntentFilter(
                 IgnitedLocationActivityConstants.ACTIVE_LOCATION_UPDATE_ACTION);
-        activity.registerReceiver(locProviderDisabledReceiver, intentFilter);
+        context.registerReceiver(locProviderDisabledReceiver, intentFilter);
 
         // Register a receiver that listens for when a better provider than I'm
         // using becomes available.
@@ -270,7 +272,7 @@ public aspect IgnitedLocationManager {
         if (bestProvider != null && !bestProvider.equals(bestAvailableProvider)) {
             locationManager.requestLocationUpdates(bestProvider, 0, 0,
                     bestInactiveLocationProviderListener,
-                    activity.getMainLooper());
+                    context.getMainLooper());
         }
     }
 
@@ -279,10 +281,10 @@ public aspect IgnitedLocationManager {
      */
     protected void disableLocationUpdates() {
         Log.d(LOG_TAG, "...disabling location updates");
-        activity.unregisterReceiver(locProviderDisabledReceiver);
+        context.unregisterReceiver(locProviderDisabledReceiver);
         locationManager.removeUpdates(locationListenerPendingIntent);
         locationManager.removeUpdates(bestInactiveLocationProviderListener);
-        boolean finishing = activity.isFinishing();
+        boolean finishing = ((Activity) context).isFinishing();
 
         if (finishing) {
             lastLocationFinder.cancel();
