@@ -15,7 +15,7 @@
 			<action android:name="com.github.ignition.location.active_location_update_action" />
 		</intent-filter>
 	</receiver>
-	<receiver android:name=".receivers.IgnitePassiveLocationChangedReceiver">
+	<receiver android:name=".receivers.PassiveLocationChangedReceiver">
 		<intent-filter>
 			<action android:name="com.github.ignition.location.passive_location_update_action" />
 		</intent-filter>

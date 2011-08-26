@@ -24,7 +24,7 @@ import android.location.LocationManager;
 import android.util.Log;
 
 import com.github.ignition.location.IgnitedLocationActivityConstants;
-import com.github.ignition.location.IgnitedLocationManager;
+import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.utils.LegacyLastLocationFinder;
 
 /**
@@ -33,13 +33,17 @@ import com.github.ignition.location.utils.LegacyLastLocationFinder;
  * 
  * Where possible, this is triggered by a Passive Location listener.
  */
-public class IgnitePassiveLocationChangedReceiver extends BroadcastReceiver {
+public class PassiveLocationChangedReceiver extends BroadcastReceiver {
 
-    protected static String LOG_TAG = IgnitePassiveLocationChangedReceiver.class
+    protected static String LOG_TAG = PassiveLocationChangedReceiver.class
             .getSimpleName();
 
+    @IgnitedLocation
+    private Location currentLocation;
+
     /**
-     * When a new location is received, extract it from the Intent and update the current location.
+     * When a new location is received, extract it from the Intent and update
+     * the current location.
      * 
      * This is the Passive receiver, used to receive Location updates from third
      * party apps when the Activity is not visible.
@@ -53,7 +57,7 @@ public class IgnitePassiveLocationChangedReceiver extends BroadcastReceiver {
             // This update came from Passive provider, so we can extract the
             // location directly.
             location = (Location) intent.getExtras().get(key);
-            
+
         } else {
             // This update came from a recurring alarm. We need to determine if
             // there has been a more recent Location received than the last
@@ -68,28 +72,27 @@ public class IgnitePassiveLocationChangedReceiver extends BroadcastReceiver {
                             System.currentTimeMillis()
                                     - IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME);
 
-            // Get the last location we used to get a listing.
-            Location lastLocation = IgnitedLocationManager.getCurrentLocation();
-
             // Check if the last location detected from the providers is either
             // too soon, or too close to the last
             // value we used. If it is within those thresholds we set the
             // location to null to prevent the update
             // Service being run unnecessarily (and spending battery on data
             // transfers).
-            if (lastLocation != null
-                    && (lastLocation.getTime() > System.currentTimeMillis()
-                            - IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME 
-                            || lastLocation.distanceTo(location) 
-                            < IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE)) {
+            if (currentLocation != null
+                    && (currentLocation.getTime() > System.currentTimeMillis()
+                            - IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME || currentLocation
+                            .distanceTo(location) < IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE)) {
                 location = null;
             }
         }
-        
+
         if (location != null) {
-            Log.d(LOG_TAG, "Passively updating place list.");
-			IgnitedLocationManager.setCurrentLocation(location);
-		}
+            currentLocation = location;
+            Log.d(LOG_TAG,
+                    "Passively updating location. New location (lat, long): "
+                            + currentLocation.getLatitude() + ", "
+                            + currentLocation.getLongitude());
+        }
 
     }
 }

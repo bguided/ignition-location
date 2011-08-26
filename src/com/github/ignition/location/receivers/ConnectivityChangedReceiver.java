@@ -52,7 +52,7 @@ public class ConnectivityChangedReceiver extends BroadcastReceiver {
             ComponentName locationReceiver = new ComponentName(context,
                     LocationChangedReceiver.class);
             ComponentName passiveLocationReceiver = new ComponentName(context,
-                    IgnitePassiveLocationChangedReceiver.class);
+                    PassiveLocationChangedReceiver.class);
 
             // The default state for this Receiver is disabled. it is only
             // enabled when a Service disables updates pending connectivity.
