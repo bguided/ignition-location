@@ -145,7 +145,7 @@ public aspect IgnitedLocationManager {
         }
     };
 
-    after() : execution(* onCreate(..)) && @this(IgnitedLocationActivity) {
+    after() : execution(* Activity.onCreate(..)) && @this(IgnitedLocationActivity) {
         context = (Context) thisJoinPoint.getThis();
         locationAnnotation = context.getClass().getAnnotation(
                 IgnitedLocationActivity.class);
@@ -195,7 +195,7 @@ public aspect IgnitedLocationManager {
 
     }
 
-    after() : execution(* onResume()) && @this(IgnitedLocationActivity) {
+    after() : execution(* Activity.onResume(..)) && @this(IgnitedLocationActivity) {
         // Get the last known location (and optionally request location updates)
         // and refresh the data.
         // boolean followLocationChanges =
@@ -228,14 +228,14 @@ public aspect IgnitedLocationManager {
 
     }
 
-    after() : execution(* onPause()) && @this(IgnitedLocationActivity) {
+    after() : execution(* Activity.onPause(..)) && @this(IgnitedLocationActivity) {
         disableLocationUpdates();
     }
 
-    after() : execution(* onDestroy()) && @this(IgnitedLocationActivity) {
+    after() : execution(* Activity.onDestroy(..)) && @this(IgnitedLocationActivity) {
         context = null;
     }
-
+    
     Location around() : get(@IgnitedLocation Location *.*) {
         return currentLocation;
     }
