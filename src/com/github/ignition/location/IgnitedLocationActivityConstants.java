@@ -22,10 +22,8 @@ public class IgnitedLocationActivityConstants {
     // TODO Turn off when deploying your app.
     public static boolean DEVELOPER_MODE = true;
 
-    // The default search radius when searching for places nearby.
-    public static int DEFAULT_RADIUS = 100;
     // The maximum distance the user should travel between location updates.
-    public static int LOCATION_UPDATE_MIN_DISTANCE = DEFAULT_RADIUS / 2;
+    public static int LOCATION_UPDATE_MIN_DISTANCE = 100;
     // The maximum time that should pass before the user gets a location update.
     public static long LOCATION_UPDATE_MIN_TIME = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 
@@ -43,54 +41,20 @@ public class IgnitedLocationActivityConstants {
     // Maximum latency before you force a cached detail page to be updated.
     public static long MAX_DETAILS_UPDATE_LATENCY = AlarmManager.INTERVAL_DAY;
 
-    // Prefetching place details is useful but potentially expensive. The
-    // following
-    // values lets you disable prefetching when on mobile data or low battery
-    // conditions.
-    // Only prefetch on WIFI?
-    public static boolean PREFETCH_ON_WIFI_ONLY = false;
-    // Disable prefetching when battery is low?
-    public static boolean DISABLE_PREFETCH_ON_LOW_BATTERY = true;
-
-    // How long to wait before retrying failed checkins.
-    public static long CHECKIN_RETRY_INTERVAL = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
-
-    // The maximum number of locations to prefetch for each update.
-    public static int PREFETCH_LIMIT = 5;
-
     public static String SP_KEY_RUN_ONCE = "SP_KEY_RUN_ONCE";
+
     public static String SHARED_PREFERENCE_FILE = "LocationManagerPreference";
+
     public static String SP_KEY_FOLLOW_LOCATION_CHANGES = "SP_KEY_FOLLOW_LOCATION_CHANGES";
-    /**
-     * These values are constants used for intents, exteas, and shared
-     * preferences. You shouldn't need to modify them.
-     */
-    // public static String SP_KEY_LAST_LIST_UPDATE_TIME =
-    // "SP_KEY_LAST_LIST_UPDATE_TIME";
-    // public static String SP_KEY_LAST_LIST_UPDATE_LAT =
-    // "SP_KEY_LAST_LIST_UPDATE_LAT";
-    // public static String SP_KEY_LAST_LIST_UPDATE_LNG =
-    // "SP_KEY_LAST_LIST_UPDATE_LNG";
-    // public static String SP_KEY_LAST_CHECKIN_ID = "SP_KEY_LAST_CHECKIN_ID";
-    // public static String SP_KEY_LAST_CHECKIN_TIMESTAMP =
-    // "SP_KEY_LAST_CHECKIN_TIMESTAMP";
-    //
-    // public static String EXTRA_KEY_REFERENCE = "reference";
-    // public static String EXTRA_KEY_ID = "id";
-    // public static String EXTRA_KEY_LOCATION = "location";
-    // public static String EXTRA_KEY_RADIUS = "radius";
-    // public static String EXTRA_KEY_TIME_STAMP = "time_stamp";
-    // public static String EXTRA_KEY_FORCEREFRESH = "force_refresh";
-    // public static String EXTRA_KEY_IN_BACKGROUND = "EXTRA_KEY_IN_BACKGROUND";
-    //
-    // public static String ARGUMENTS_KEY_REFERENCE = "reference";
-    // public static String ARGUMENTS_KEY_ID = "id";
 
     public static String PASSIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.passive_location_update_action";
+
     public static String ACTIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.active_location_update_action";
 
     public static boolean SUPPORTS_GINGERBREAD = android.os.Build.VERSION.SDK_INT >= 9;
+
     public static boolean SUPPORTS_HONEYCOMB = android.os.Build.VERSION.SDK_INT >= 11;
+
     public static boolean SUPPORTS_FROYO = android.os.Build.VERSION.SDK_INT >= 8;
 
     public static String IGNITED_LOCATION_PROVIDER = "ignited_location_provider";
