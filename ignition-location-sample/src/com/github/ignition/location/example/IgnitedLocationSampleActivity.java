@@ -15,13 +15,14 @@
 
 package com.github.ignition.location.example;
 
-import java.util.ArrayList;
-
 import android.app.ListActivity;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ToggleButton;
 
 import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.annotations.IgnitedLocationActivity;
@@ -43,10 +44,25 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
         adapter = new ArrayAdapter<Location>(this,
                 android.R.layout.activity_list_item, android.R.id.text1);
-        setListAdapter(this.adapter);
+        setListAdapter(adapter);
+
+        ((ToggleButton) findViewById(R.id.ign_loc_button))
+                .setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(
+                                IgnitedLocationSampleActivity.this,
+                                IgnitedLocationSampleService.class);
+                        if (((ToggleButton) v).isChecked()) {
+                            startService(intent);
+                        } else {
+                            stopService(intent);
+                        }
+                    }
+                });
     }
 
     // Make sure the onResume() method is overridden in your Activity or
@@ -78,8 +94,6 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     }
 
     public void refreshData() {
-        Log.d(IgnitedLocationSampleActivity.class.getSimpleName(),
-                currentLocation.toString());
         adapter.add(currentLocation);
     }
 
