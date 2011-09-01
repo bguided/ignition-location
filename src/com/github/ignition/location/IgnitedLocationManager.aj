@@ -45,6 +45,7 @@ import com.github.ignition.location.templates.ILastLocationFinder;
 import com.github.ignition.location.templates.OnIgnitedLocationChangedListener;
 import com.github.ignition.location.templates.LocationUpdateRequester;
 import com.github.ignition.location.utils.PlatformSpecificImplementationFactory;
+import com.github.ignition.support.IgnitedDiagnostics;
 
 @SuppressAjWarnings
 public aspect IgnitedLocationManager {
@@ -262,16 +263,18 @@ public aspect IgnitedLocationManager {
                 criteria, locationListenerPendingIntent);
 
         // Passive location updates from 3rd party apps when the Activity isn't
-        // visible.
-        locationUpdateRequester.requestPassiveLocationUpdates(
-                IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME,
-                IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE,
-                locationListenerPassivePendingIntent);
-
+        // visible. Only for Android 2.2+.
+        if (IgnitedDiagnostics.SUPPORTS_GINGERBREAD) {
+            locationUpdateRequester
+                    .requestPassiveLocationUpdates(
+                            IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME,
+                            IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE,
+                            locationListenerPassivePendingIntent);
+        }
         // Register a receiver that listens for when the provider I'm using has
         // been disabled.
         IntentFilter intentFilter = new IntentFilter(
-                IgnitedLocationActivityConstants.ACTIVE_LOCATION_UPDATE_ACTION);
+                IgnitedLocationActivityConstants.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED);
         context.registerReceiver(locProviderDisabledReceiver, intentFilter);
 
         // Register a receiver that listens for when a better provider than I'm

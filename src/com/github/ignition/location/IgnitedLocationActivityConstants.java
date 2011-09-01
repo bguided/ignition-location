@@ -51,12 +51,6 @@ public class IgnitedLocationActivityConstants {
 
     public static String ACTIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.active_location_update_action";
 
-    public static boolean SUPPORTS_GINGERBREAD = android.os.Build.VERSION.SDK_INT >= 9;
-
-    public static boolean SUPPORTS_HONEYCOMB = android.os.Build.VERSION.SDK_INT >= 11;
-
-    public static boolean SUPPORTS_FROYO = android.os.Build.VERSION.SDK_INT >= 8;
-
     public static String IGNITED_LOCATION_PROVIDER = "ignited_location_provider";
 
 }

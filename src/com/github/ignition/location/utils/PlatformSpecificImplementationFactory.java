@@ -22,9 +22,9 @@ import android.app.AlarmManager;
 import android.content.Context;
 import android.location.LocationManager;
 
-import com.github.ignition.location.IgnitedLocationActivityConstants;
 import com.github.ignition.location.templates.ILastLocationFinder;
 import com.github.ignition.location.templates.LocationUpdateRequester;
+import com.github.ignition.support.IgnitedDiagnostics;
 
 /**
  * Factory class to create the correct instances of a variety of classes with
@@ -40,7 +40,7 @@ public class PlatformSpecificImplementationFactory {
 	 * @return LastLocationFinder
 	 */
 	public static ILastLocationFinder getLastLocationFinder(Context context) {
-		return IgnitedLocationActivityConstants.SUPPORTS_GINGERBREAD ? new GingerbreadLastLocationFinder(
+		return IgnitedDiagnostics.SUPPORTS_GINGERBREAD ? new GingerbreadLastLocationFinder(
 				context) : new LegacyLastLocationFinder(context);
 	}
 
@@ -55,9 +55,9 @@ public class PlatformSpecificImplementationFactory {
 			Context context) {
 		LocationManager locationManager = (LocationManager) context
 				.getSystemService(LOCATION_SERVICE);
-		if (IgnitedLocationActivityConstants.SUPPORTS_GINGERBREAD) {
+		if (IgnitedDiagnostics.SUPPORTS_GINGERBREAD) {
 			return new GingerbreadLocationUpdateRequester(locationManager);
-		} else if (IgnitedLocationActivityConstants.SUPPORTS_FROYO) {
+		} else if (IgnitedDiagnostics.SUPPORTS_FROYO) {
 			return new FroyoLocationUpdateRequester(locationManager);
 		} else {
 			AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);

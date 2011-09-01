@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 import com.github.ignition.location.IgnitedLocationActivityConstants;
 import com.github.ignition.location.templates.LocationUpdateRequester;
 import com.github.ignition.location.utils.PlatformSpecificImplementationFactory;
+import com.github.ignition.support.IgnitedDiagnostics;
 
 /**
  * This Receiver class is designed to listen for system boot.
@@ -54,7 +55,7 @@ public class BootReceiver extends BroadcastReceiver {
 			boolean followLocationChanges = prefs.getBoolean(
 					SP_KEY_FOLLOW_LOCATION_CHANGES, true);
 
-			if (followLocationChanges) {
+			if (followLocationChanges && IgnitedDiagnostics.SUPPORTS_FROYO) {
 				// Passive location updates from 3rd party apps when the
 				// Activity isn't visible.
 				Intent passiveIntent = new Intent(
