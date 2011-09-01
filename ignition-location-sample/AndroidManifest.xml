@@ -32,11 +32,7 @@
             <action android:name="com.github.ignition.location.active_location_update_action" />
         </intent-filter>
     </receiver>
-    <receiver android:name="com.github.ignition.location.receivers.PassiveLocationChangedReceiver">
-        <intent-filter>
-            <action android:name="com.github.ignition.location.passive_location_update_action" />
-        </intent-filter>
-    </receiver>
+    <receiver android:name="com.github.ignition.location.receivers.PassiveLocationChangedReceiver" />
     <receiver android:name="com.github.ignition.location.receivers.ConnectivityChangedReceiver"
         enabled="false">
         <intent-filter>
