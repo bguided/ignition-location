@@ -2,10 +2,9 @@
 buildscript {
     repositories {
       mavenLocal()
-      mavenRepo(urls: 'http://jvoegele.com/maven2/')
+      mavenRepo urls: 'http://jvoegele.com/maven2/'
     }
     dependencies {
-      //classpath 'com.jvoegele.gradle.plugins:android-plugin:1.0.0-SNAPSHOT'
       classpath 'com.jvoegele.gradle.plugins:gradle-android-plugin:1.1.0-SNAPSHOT'
     }
 }
@@ -13,6 +12,9 @@ buildscript {
 ///////////////////////////////////////////////////////////////////////////////////
 
 apply plugin: 'android'
+apply plugin: 'eclipse'
+
+dependsOn(':ignition-support')
 
 sourceSets {
   main {
@@ -23,5 +25,9 @@ sourceSets {
 }
 
 dependencies {
+    compile(project(':ignition-support')) {
+        exclude module: 'android'
+    }
     compile('org.aspectj:aspectjrt:1.6.11')
+//    ajc "org.aspectj:aspectjtools:1.6.11"
 }
