@@ -42,7 +42,7 @@ import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.annotations.IgnitedLocationActivity;
 import com.github.ignition.location.annotations.IgnitedLocationService;
 import com.github.ignition.location.templates.ILastLocationFinder;
-import com.github.ignition.location.templates.IgnitedOnLocationChangedListener;
+import com.github.ignition.location.templates.OnIgnitedLocationChangedListener;
 import com.github.ignition.location.templates.LocationUpdateRequester;
 import com.github.ignition.location.utils.PlatformSpecificImplementationFactory;
 
@@ -52,9 +52,9 @@ public aspect IgnitedLocationManager {
     public static final String LOG_TAG = IgnitedLocationManager.class
             .getSimpleName();
 
-    declare parents : (@IgnitedLocationActivity *) implements IgnitedOnLocationChangedListener;
+    declare parents : (@IgnitedLocationActivity *) implements OnIgnitedLocationChangedListener;
 
-    declare parents : (@IgnitedLocationService *) implements IgnitedOnLocationChangedListener;
+    declare parents : (@IgnitedLocationService *) implements OnIgnitedLocationChangedListener;
 
     protected Criteria criteria;
 
@@ -85,7 +85,7 @@ public aspect IgnitedLocationManager {
         public void onLocationChanged(Location lastLocation) {
             currentLocation = lastLocation;
             if (context != null) {
-                ((IgnitedOnLocationChangedListener) context).onLocationChanged(currentLocation);
+                ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(currentLocation);
             }
         }
 
@@ -222,8 +222,8 @@ public aspect IgnitedLocationManager {
                                 + currentLocation.getLatitude() + ", "
                                 + currentLocation.getLongitude());
                 if (context != null) {
-                    ((IgnitedOnLocationChangedListener) context)
-                            .onLocationChanged(currentLocation);
+                    ((OnIgnitedLocationChangedListener) context)
+                            .onIgnitedLocationChanged(currentLocation);
                 }
                 // If we have requested location updates, turn them on here.
                 toggleUpdatesWhenLocationChanges();

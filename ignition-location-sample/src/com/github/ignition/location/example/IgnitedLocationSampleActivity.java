@@ -78,7 +78,7 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     protected void onPause() {
         super.onPause();
     }
-
+    
     // Make sure the onDestroy() method is overridden in your Activity or
     // the ignition-location library won't work properly
     @Override
@@ -89,7 +89,7 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     // This callback is called every time the Location Manager has got a new
     // location. Use it to update you geo-sensible data.
     @Override
-    public void onLocationChanged(Location newLocation) {
+    public void onIgnitedLocationChanged(Location newLocation) {
         refreshData();
     }
 

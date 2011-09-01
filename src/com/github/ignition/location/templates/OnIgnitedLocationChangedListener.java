@@ -17,8 +17,8 @@ package com.github.ignition.location.templates;
 
 import android.location.Location;
 
-public interface IgnitedOnLocationChangedListener {
+public interface OnIgnitedLocationChangedListener {
 
-	void onLocationChanged(Location newLocation);
+	void onIgnitedLocationChanged(Location newLocation);
 
 }

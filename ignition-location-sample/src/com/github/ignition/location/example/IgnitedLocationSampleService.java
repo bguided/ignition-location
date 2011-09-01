@@ -79,7 +79,7 @@ public class IgnitedLocationSampleService extends Service {
     }
 
     @Override
-    public void onLocationChanged(Location freshLocation) {
+    public void onIgnitedLocationChanged(Location freshLocation) {
 
         // Start up the thread running the service. Note that we create a
         // separate thread because the service normally runs in the process's
