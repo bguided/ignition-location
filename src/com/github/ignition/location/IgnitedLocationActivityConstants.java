@@ -48,6 +48,8 @@ public class IgnitedLocationActivityConstants {
     public static String SP_KEY_FOLLOW_LOCATION_CHANGES = "SP_KEY_FOLLOW_LOCATION_CHANGES";
 
     public static String PASSIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.passive_location_update_action";
+    
+    public static String ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED = "com.github.ignition.location.active_location_update_provider_disabled";
 
     public static String ACTIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.active_location_update_action";
 

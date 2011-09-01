@@ -23,6 +23,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 
+import com.github.ignition.location.IgnitedLocationActivityConstants;
 import com.github.ignition.location.annotations.IgnitedLocation;
 
 /**
@@ -47,6 +48,14 @@ public class LocationChangedReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String key = LocationManager.KEY_LOCATION_CHANGED;
+        String providerEnabledKey = LocationManager.KEY_PROVIDER_ENABLED;
+        if (intent.hasExtra(providerEnabledKey)) {
+          if (!intent.getBooleanExtra(providerEnabledKey, true)) {
+              Intent providerDisabledIntent = new Intent(IgnitedLocationActivityConstants.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED);
+            context.sendBroadcast(providerDisabledIntent);    
+          }
+        }
+
         if (intent.hasExtra(key)) {
             Location location = (Location) intent.getExtras().get(key);
             currentLocation = location;
