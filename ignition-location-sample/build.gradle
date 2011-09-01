@@ -1,0 +1,43 @@
+// gradle-android plugin configuration
+buildscript {
+    repositories {
+      mavenLocal()
+      mavenRepo urls: 'http://jvoegele.com/maven2/'
+    }
+    dependencies {
+      classpath 'com.jvoegele.gradle.plugins:gradle-android-plugin:1.1.0-SNAPSHOT'
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+
+apply plugin: 'android'
+apply plugin: 'eclipse'
+
+sourceSets {
+  main {
+    java {
+      srcDir 'src'
+    }
+  }
+}
+
+configurations {
+    // exclude all libraries that are contained in the Android jar
+    all*.exclude group: 'commons-logging'
+    all*.exclude group: 'xerces'
+    all*.exclude group: 'xpp3'
+//    ajc
+}
+
+dependencies {
+    compile('com.github.ignition:ignition-support:0.1')
+    compile('org.aspectj:aspectjrt:1.6.11')
+//    ajc "org.aspectj:aspectjtools:1.6.11"
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+//    mavenRepo urls: 'https://raw.github.com/kaeppler/maven2/master'
+}
