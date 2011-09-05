@@ -31,7 +31,9 @@ configurations {
 }
 
 dependencies {
-    compile('com.github.ignition:ignition-support:0.1')
+    compile('com.github.ignition:ignition-support:0.1') {
+        exclude module: 'android'
+    }
     compile('org.aspectj:aspectjrt:1.6.11')
 //    ajc "org.aspectj:aspectjtools:1.6.11"
 }
