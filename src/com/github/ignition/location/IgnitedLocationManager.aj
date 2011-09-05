@@ -264,7 +264,7 @@ public aspect IgnitedLocationManager {
 
         // Passive location updates from 3rd party apps when the Activity isn't
         // visible. Only for Android 2.2+.
-        if (IgnitedDiagnostics.SUPPORTS_GINGERBREAD) {
+        if (IgnitedDiagnostics.SUPPORTS_FROYO) {
             locationUpdateRequester
                     .requestPassiveLocationUpdates(
                             IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME,
