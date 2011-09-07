@@ -28,8 +28,11 @@
         <service android:exported="false"
             android:name=".IgnitedLocationSampleService" />
 
-        <receiver
-            android:name="com.github.ignition.location.receivers.LocationChangedReceiver" />
+        <receiver android:name="com.github.ignition.location.receivers.LocationChangedReceiver" >
+            <intent-filter >
+                <action android:name="com.github.ignition.location.receivers.ACTIVE_LOCATION_UPDATE_ACTION" />
+            </intent-filter>
+        </receiver>
         <receiver
             android:name="com.github.ignition.location.receivers.PassiveLocationChangedReceiver" />
         <receiver
