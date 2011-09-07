@@ -28,4 +28,8 @@ public @interface IgnitedLocationActivity {
 
     boolean refreshDataIfLocationChanges() default false;
 
+    int locationUpdateMinDistance() default 100;
+
+    int locationUpdateInterval() default 5;
+
 }

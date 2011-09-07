@@ -76,7 +76,9 @@ public aspect IgnitedLocationManager {
     private static volatile Location currentLocation;
 
     private boolean refreshDataIfLocationChanges;
-
+    
+    private int locationUpdateInterval, locationUpdateMinDistance;
+    
     /**
      * One-off location listener that receives updates from the
      * {@link LastLocationFinder}. This is triggered where the last known
@@ -154,6 +156,9 @@ public aspect IgnitedLocationManager {
         context = (Context) thisJoinPoint.getThis();
         locationAnnotation = context.getClass().getAnnotation(
                 IgnitedLocationActivity.class);
+        
+        locationUpdateMinDistance = locationAnnotation.locationUpdateMinDistance();
+        locationUpdateInterval = locationAnnotation.locationUpdateInterval();
 
         refreshDataIfLocationChanges = locationAnnotation
                 .refreshDataIfLocationChanges();
@@ -263,18 +268,15 @@ public aspect IgnitedLocationManager {
         Log.d(LOG_TAG, "requesting location updates...");
         // Normal updates while activity is visible.
         locationUpdateRequester.requestLocationUpdates(
-                IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME,
-                IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE,
+                locationUpdateInterval,
+                locationUpdateMinDistance,
                 criteria, locationListenerPendingIntent);
 
         // Passive location updates from 3rd party apps when the Activity isn't
         // visible. Only for Android 2.2+.
         if (IgnitedDiagnostics.SUPPORTS_FROYO) {
-            locationUpdateRequester
-                    .requestPassiveLocationUpdates(
-                            IgnitedLocationConstants.LOCATION_UPDATE_MIN_TIME,
-                            IgnitedLocationConstants.LOCATION_UPDATE_MIN_DISTANCE,
-                            locationListenerPassivePendingIntent);
+            locationUpdateRequester.requestPassiveLocationUpdates(locationUpdateInterval,
+                    locationUpdateMinDistance, locationListenerPassivePendingIntent);
         }
         // Register a receiver that listens for when the provider I'm using has
         // been disabled.
