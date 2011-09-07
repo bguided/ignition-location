@@ -18,7 +18,7 @@ package com.github.ignition.location;
 
 import android.app.AlarmManager;
 
-public class IgnitedLocationActivityConstants {
+public class IgnitedLocationConstants {
     // TODO Turn off when deploying your app.
     public static boolean DEVELOPER_MODE = true;
 

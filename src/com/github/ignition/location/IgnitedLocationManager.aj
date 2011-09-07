@@ -18,8 +18,8 @@
 
 package com.github.ignition.location;
 
-import static com.github.ignition.location.IgnitedLocationActivityConstants.SHARED_PREFERENCE_FILE;
-import static com.github.ignition.location.IgnitedLocationActivityConstants.SP_KEY_FOLLOW_LOCATION_CHANGES;
+import static com.github.ignition.location.IgnitedLocationConstants.SHARED_PREFERENCE_FILE;
+import static com.github.ignition.location.IgnitedLocationConstants.SP_KEY_FOLLOW_LOCATION_CHANGES;
 
 import org.aspectj.lang.annotation.SuppressAjWarnings;
 
@@ -177,7 +177,7 @@ public aspect IgnitedLocationManager {
 
         // Setup the location update Pending Intents
         Intent activeIntent = new Intent(
-                IgnitedLocationActivityConstants.ACTIVE_LOCATION_UPDATE_ACTION);
+                IgnitedLocationConstants.ACTIVE_LOCATION_UPDATE_ACTION);
         locationListenerPendingIntent = PendingIntent.getBroadcast(context, 0,
                 activeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -272,14 +272,14 @@ public aspect IgnitedLocationManager {
         if (IgnitedDiagnostics.SUPPORTS_FROYO) {
             locationUpdateRequester
                     .requestPassiveLocationUpdates(
-                            IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME,
-                            IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE,
+                            IgnitedLocationConstants.LOCATION_UPDATE_MIN_TIME,
+                            IgnitedLocationConstants.LOCATION_UPDATE_MIN_DISTANCE,
                             locationListenerPassivePendingIntent);
         }
         // Register a receiver that listens for when the provider I'm using has
         // been disabled.
         IntentFilter intentFilter = new IntentFilter(
-                IgnitedLocationActivityConstants.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED);
+                IgnitedLocationConstants.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED);
         context.registerReceiver(locProviderDisabledReceiver, intentFilter);
 
         // Register a receiver that listens for when a better provider than I'm
@@ -307,7 +307,7 @@ public aspect IgnitedLocationManager {
         if (finishing) {
             lastLocationFinder.cancel();
         }
-        if (IgnitedLocationActivityConstants.DISABLE_PASSIVE_LOCATION_WHEN_USER_EXIT
+        if (IgnitedLocationConstants.DISABLE_PASSIVE_LOCATION_WHEN_USER_EXIT
                 && finishing) {
             locationManager.removeUpdates(locationListenerPassivePendingIntent);
         }
@@ -325,9 +325,9 @@ public aspect IgnitedLocationManager {
         // updates.
         Location lastKnownLocation = IgnitedLocationManager.this.lastLocationFinder
                 .getLastBestLocation(
-                        IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE,
+                        IgnitedLocationConstants.LOCATION_UPDATE_MIN_DISTANCE,
                         System.currentTimeMillis()
-                                - IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME);
+                                - IgnitedLocationConstants.LOCATION_UPDATE_MIN_TIME);
 
         return lastKnownLocation;
     }

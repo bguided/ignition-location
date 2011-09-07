@@ -16,16 +16,16 @@
 
 package com.github.ignition.location.receivers;
 
-import static com.github.ignition.location.IgnitedLocationActivityConstants.SHARED_PREFERENCE_FILE;
-import static com.github.ignition.location.IgnitedLocationActivityConstants.SP_KEY_FOLLOW_LOCATION_CHANGES;
-import static com.github.ignition.location.IgnitedLocationActivityConstants.SP_KEY_RUN_ONCE;
+import static com.github.ignition.location.IgnitedLocationConstants.SHARED_PREFERENCE_FILE;
+import static com.github.ignition.location.IgnitedLocationConstants.SP_KEY_FOLLOW_LOCATION_CHANGES;
+import static com.github.ignition.location.IgnitedLocationConstants.SP_KEY_RUN_ONCE;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import com.github.ignition.location.IgnitedLocationActivityConstants;
+import com.github.ignition.location.IgnitedLocationConstants;
 import com.github.ignition.location.templates.LocationUpdateRequester;
 import com.github.ignition.location.utils.PlatformSpecificImplementationFactory;
 import com.github.ignition.support.IgnitedDiagnostics;
@@ -63,8 +63,8 @@ public class BootReceiver extends BroadcastReceiver {
 						.getBroadcast(context, 0, passiveIntent,
 								PendingIntent.FLAG_UPDATE_CURRENT);
 				locationUpdateRequester.requestPassiveLocationUpdates(
-						IgnitedLocationActivityConstants.PASSIVE_MAX_TIME,
-						IgnitedLocationActivityConstants.PASSIVE_MAX_DISTANCE,
+						IgnitedLocationConstants.PASSIVE_MAX_TIME,
+						IgnitedLocationConstants.PASSIVE_MAX_DISTANCE,
 						locationListenerPassivePendingIntent);
 			}
 		}

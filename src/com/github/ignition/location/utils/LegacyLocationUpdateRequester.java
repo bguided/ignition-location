@@ -21,7 +21,7 @@ import android.app.PendingIntent;
 import android.location.Criteria;
 import android.location.LocationManager;
 
-import com.github.ignition.location.IgnitedLocationActivityConstants;
+import com.github.ignition.location.IgnitedLocationConstants;
 import com.github.ignition.location.templates.LocationUpdateRequester;
 
 /**
@@ -75,7 +75,7 @@ public class LegacyLocationUpdateRequester extends LocationUpdateRequester {
         // distance before initiating a background nearby loction update.
         this.alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
                 System.currentTimeMillis()
-                        + IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME,
-                IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME, pendingIntent);
+                        + IgnitedLocationConstants.LOCATION_UPDATE_MIN_TIME,
+                IgnitedLocationConstants.LOCATION_UPDATE_MIN_TIME, pendingIntent);
     }
 }

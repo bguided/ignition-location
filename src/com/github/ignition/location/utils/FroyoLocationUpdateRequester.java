@@ -19,7 +19,7 @@ package com.github.ignition.location.utils;
 import android.app.PendingIntent;
 import android.location.LocationManager;
 
-import com.github.ignition.location.IgnitedLocationActivityConstants;
+import com.github.ignition.location.IgnitedLocationConstants;
 
 /**
  * Provides support for initiating active and passive location updates optimized
@@ -44,7 +44,7 @@ public class FroyoLocationUpdateRequester extends LegacyLocationUpdateRequester 
         // receives location updates.
         this.locationManager.requestLocationUpdates(
                 LocationManager.PASSIVE_PROVIDER,
-                IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME,
-                IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE, pendingIntent);
+                IgnitedLocationConstants.LOCATION_UPDATE_MIN_TIME,
+                IgnitedLocationConstants.LOCATION_UPDATE_MIN_DISTANCE, pendingIntent);
     }
 }

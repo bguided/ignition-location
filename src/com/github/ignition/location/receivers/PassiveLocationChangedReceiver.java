@@ -23,7 +23,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 
-import com.github.ignition.location.IgnitedLocationActivityConstants;
+import com.github.ignition.location.IgnitedLocationConstants;
 import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.utils.LegacyLastLocationFinder;
 
@@ -68,9 +68,9 @@ public class PassiveLocationChangedReceiver extends BroadcastReceiver {
                     context);
             location = lastLocationFinder
                     .getLastBestLocation(
-                            IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE,
+                            IgnitedLocationConstants.LOCATION_UPDATE_MIN_DISTANCE,
                             System.currentTimeMillis()
-                                    - IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME);
+                                    - IgnitedLocationConstants.LOCATION_UPDATE_MIN_TIME);
 
             // Check if the last location detected from the providers is either
             // too soon, or too close to the last
@@ -80,8 +80,8 @@ public class PassiveLocationChangedReceiver extends BroadcastReceiver {
             // transfers).
             if (currentLocation != null
                     && (currentLocation.getTime() > System.currentTimeMillis()
-                            - IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_TIME || currentLocation
-                            .distanceTo(location) < IgnitedLocationActivityConstants.LOCATION_UPDATE_MIN_DISTANCE)) {
+                            - IgnitedLocationConstants.LOCATION_UPDATE_MIN_TIME || currentLocation
+                            .distanceTo(location) < IgnitedLocationConstants.LOCATION_UPDATE_MIN_DISTANCE)) {
                 location = null;
             }
         }
