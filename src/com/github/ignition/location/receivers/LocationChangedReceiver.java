@@ -45,7 +45,6 @@ public class LocationChangedReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        System.out.println("received broadcast");
         String key = LocationManager.KEY_LOCATION_CHANGED;
         String providerEnabledKey = LocationManager.KEY_PROVIDER_ENABLED;
         if (intent.hasExtra(providerEnabledKey)) {
