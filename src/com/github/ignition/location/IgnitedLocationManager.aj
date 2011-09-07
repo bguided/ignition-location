@@ -43,8 +43,8 @@ import com.github.ignition.location.annotations.IgnitedLocationActivity;
 import com.github.ignition.location.annotations.IgnitedLocationService;
 import com.github.ignition.location.receivers.PassiveLocationChangedReceiver;
 import com.github.ignition.location.templates.ILastLocationFinder;
-import com.github.ignition.location.templates.OnIgnitedLocationChangedListener;
 import com.github.ignition.location.templates.LocationUpdateRequester;
+import com.github.ignition.location.templates.OnIgnitedLocationChangedListener;
 import com.github.ignition.location.utils.PlatformSpecificImplementationFactory;
 import com.github.ignition.support.IgnitedDiagnostics;
 
@@ -218,13 +218,14 @@ public aspect IgnitedLocationManager {
             @Override
             protected void onPostExecute(Location lastKnownLocation) {
                 currentLocation = lastKnownLocation;
-                Log.d(LOG_TAG,
-                        "Last known location (lat, long): "
-                                + currentLocation.getLatitude() + ", "
-                                + currentLocation.getLongitude());
-                if (context != null) {
-                    ((OnIgnitedLocationChangedListener) context)
-                            .onIgnitedLocationChanged(currentLocation);
+                if (currentLocation != null) {
+                    Log.d(LOG_TAG,
+                            "Last known location (lat, long): " + currentLocation.getLatitude()
+                                    + ", " + currentLocation.getLongitude());
+                    if (context != null) {
+                        ((OnIgnitedLocationChangedListener) context)
+                        .onIgnitedLocationChanged(currentLocation);
+                    }
                 }
                 // If we have requested location updates, turn them on here.
                 toggleUpdatesWhenLocationChanges();
