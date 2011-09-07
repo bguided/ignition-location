@@ -27,42 +27,39 @@ import com.github.ignition.location.IgnitedLocationActivityConstants;
 import com.github.ignition.location.annotations.IgnitedLocation;
 
 /**
- * This Receiver class is used to listen for Broadcast Intents that announce
- * that a location change has occurred. This is used instead of a
- * LocationListener within an Activity is our only action is to start a service.
+ * This Receiver class is used to listen for Broadcast Intents that announce that a location change
+ * has occurred. This is used instead of a LocationListener within an Activity is our only action is
+ * to start a service.
  */
 public class LocationChangedReceiver extends BroadcastReceiver {
     @IgnitedLocation
     Location currentLocation;
 
-    protected static String LOG_TAG = LocationChangedReceiver.class
-            .getSimpleName();
+    protected static String LOG_TAG = LocationChangedReceiver.class.getSimpleName();
 
     /**
-     * When a new location is received, extract it from the Intent and use it to
-     * start the Service used to update the list of nearby places.
+     * When a new location is received, extract it from the Intent and use it to start the Service
+     * used to update the list of nearby places.
      * 
-     * This is the Active receiver, used to receive Location updates when the
-     * Activity is visible.
+     * This is the Active receiver, used to receive Location updates when the Activity is visible.
      */
     @Override
     public void onReceive(Context context, Intent intent) {
+        System.out.println("received broadcast");
         String key = LocationManager.KEY_LOCATION_CHANGED;
         String providerEnabledKey = LocationManager.KEY_PROVIDER_ENABLED;
         if (intent.hasExtra(providerEnabledKey)) {
-          if (!intent.getBooleanExtra(providerEnabledKey, true)) {
-              Intent providerDisabledIntent = new Intent(IgnitedLocationActivityConstants.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED);
-            context.sendBroadcast(providerDisabledIntent);    
-          }
+            if (!intent.getBooleanExtra(providerEnabledKey, true)) {
+                Intent providerDisabledIntent = new Intent(
+                        IgnitedLocationActivityConstants.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED);
+                context.sendBroadcast(providerDisabledIntent);
+            }
         }
 
         if (intent.hasExtra(key)) {
             Location location = (Location) intent.getExtras().get(key);
             currentLocation = location;
-            Log.d(LOG_TAG,
-                    "Actively updating location. New location (lat, long): "
-                            + currentLocation.getLatitude() + ", "
-                            + currentLocation.getLongitude());
+            Log.d(LOG_TAG, "Actively updating location...");
         }
     }
 }
