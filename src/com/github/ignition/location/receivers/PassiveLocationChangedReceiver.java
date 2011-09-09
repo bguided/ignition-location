@@ -16,9 +16,11 @@
 
 package com.github.ignition.location.receivers;
 
+import static com.github.ignition.location.IgnitedLocationConstants.SHARED_PREFERENCE_FILE;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
@@ -28,25 +30,23 @@ import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.utils.LegacyLastLocationFinder;
 
 /**
- * This Receiver class is used to listen for Broadcast Intents that announce
- * that a location change has occurred while this application isn't visible.
+ * This Receiver class is used to listen for Broadcast Intents that announce that a location change
+ * has occurred while this application isn't visible.
  * 
  * Where possible, this is triggered by a Passive Location listener.
  */
 public class PassiveLocationChangedReceiver extends BroadcastReceiver {
 
-    protected static String LOG_TAG = PassiveLocationChangedReceiver.class
-            .getSimpleName();
+    protected static String LOG_TAG = PassiveLocationChangedReceiver.class.getSimpleName();
 
     @IgnitedLocation
     private Location currentLocation;
 
     /**
-     * When a new location is received, extract it from the Intent and update
-     * the current location.
+     * When a new location is received, extract it from the Intent and update the current location.
      * 
-     * This is the Passive receiver, used to receive Location updates from third
-     * party apps when the Activity is not visible.
+     * This is the Passive receiver, used to receive Location updates from third party apps when the
+     * Activity is not visible.
      */
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -63,14 +63,19 @@ public class PassiveLocationChangedReceiver extends BroadcastReceiver {
             // there has been a more recent Location received than the last
             // location we used.
 
+            SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCE_FILE,
+                    Context.MODE_PRIVATE);
+            long locationUpdateInterval = prefs.getLong(
+                    IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_INTERVAL,
+                    IgnitedLocationConstants.LOCATION_UPDATES_INTERVAL);
+            int locationUpdateDistanceDiff = prefs.getInt(
+                    IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_DISTANCE_DIFF,
+                    IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF);
+
             // Get the best last location detected from the providers.
-            LegacyLastLocationFinder lastLocationFinder = new LegacyLastLocationFinder(
-                    context);
-            location = lastLocationFinder
-                    .getLastBestLocation(
-                            IgnitedLocationConstants.LOCATION_UPDATE_MIN_DISTANCE,
-                            System.currentTimeMillis()
-                                    - IgnitedLocationConstants.LOCATION_UPDATE_MIN_TIME);
+            LegacyLastLocationFinder lastLocationFinder = new LegacyLastLocationFinder(context);
+            location = lastLocationFinder.getLastBestLocation(locationUpdateDistanceDiff,
+                    System.currentTimeMillis() - locationUpdateInterval);
 
             // Check if the last location detected from the providers is either
             // too soon, or too close to the last
@@ -80,18 +85,15 @@ public class PassiveLocationChangedReceiver extends BroadcastReceiver {
             // transfers).
             if (currentLocation != null
                     && (currentLocation.getTime() > System.currentTimeMillis()
-                            - IgnitedLocationConstants.LOCATION_UPDATE_MIN_TIME || currentLocation
-                            .distanceTo(location) < IgnitedLocationConstants.LOCATION_UPDATE_MIN_DISTANCE)) {
+                            - locationUpdateInterval || currentLocation.distanceTo(location) < locationUpdateDistanceDiff)) {
                 location = null;
             }
         }
 
         if (location != null) {
             currentLocation = location;
-            Log.d(LOG_TAG,
-                    "Passively updating location. New location (lat, long): "
-                            + currentLocation.getLatitude() + ", "
-                            + currentLocation.getLongitude());
+            Log.d(LOG_TAG, "Passively updating location. New location (lat, long): "
+                    + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
         }
 
     }

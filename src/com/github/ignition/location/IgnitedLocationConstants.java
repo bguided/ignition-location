@@ -16,43 +16,39 @@
 
 package com.github.ignition.location;
 
-import android.app.AlarmManager;
-
 public class IgnitedLocationConstants {
-    // TODO Turn off when deploying your app.
-    public static boolean DEVELOPER_MODE = true;
+
+    public static final boolean USE_GPS = true;
+
+    public static final boolean REFRESH_DATA_ON_LOCATION_CHANGED = true;
 
     // The maximum distance the user should travel between location updates.
-    public static int LOCATION_UPDATE_MIN_DISTANCE = 100;
+    public static final int LOCATION_UPDATES_DISTANCE_DIFF = 100; // meters
     // The maximum time that should pass before the user gets a location update.
-    public static long LOCATION_UPDATE_MIN_TIME = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+    public static final long LOCATION_UPDATES_INTERVAL = 5; // minutes
 
     // You will generally want passive location updates to occur less frequently
     // than active updates. You need to balance location freshness with battery
-    // life.
-    // The location update distance for passive updates.
-    public static int PASSIVE_MAX_DISTANCE = LOCATION_UPDATE_MIN_DISTANCE;
+    // life. The location update distance for passive updates.
+    public static final int PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF = LOCATION_UPDATES_DISTANCE_DIFF; // meters
     // The location update time for passive updates
-    public static long PASSIVE_MAX_TIME = LOCATION_UPDATE_MIN_TIME;
+    public static final long PASSIVE_LOCATION_UPDATES_INTERVAL = 15; // minutes
     // When the user exits via the back button, do you want to disable
     // passive background updates.
-    public static boolean DISABLE_PASSIVE_LOCATION_WHEN_USER_EXIT = false;
+    public static final boolean DISABLE_PASSIVE_LOCATION_WHEN_USER_EXIT = false;
 
-    // Maximum latency before you force a cached detail page to be updated.
-    public static long MAX_DETAILS_UPDATE_LATENCY = AlarmManager.INTERVAL_DAY;
+    public static final String SHARED_PREFERENCE_FILE = "IgnitedLocationManagerPreference";
+    public static final String SP_KEY_RUN_ONCE = "sp_key_run_once";
+    public static String SP_KEY_FOLLOW_LOCATION_CHANGES = "sp_key_follow_location_changes";
+    public static String SP_KEY_LOCATION_UPDATES_DISTANCE_DIFF = "sp_location_updates_distance_diff";
+    public static String SP_KEY_LOCATION_UPDATES_INTERVAL = "sp_key_location_updates_interval";
+    public static String SP_KEY_PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF = "sp_passive_location_updates_distance_diff";
+    public static String SP_KEY_PASSIVE_LOCATION_UPDATES_INTERVAL = "sp_key_passive_location_updates_interval";
 
-    public static String SP_KEY_RUN_ONCE = "SP_KEY_RUN_ONCE";
+    public static final String PASSIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.passive_location_update_action";
+    public static final String ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED_ACTION = "com.github.ignition.location.active_location_update_provider_disabled";
+    public static final String ACTIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.active_location_update_action";
 
-    public static String SHARED_PREFERENCE_FILE = "LocationManagerPreference";
-
-    public static String SP_KEY_FOLLOW_LOCATION_CHANGES = "SP_KEY_FOLLOW_LOCATION_CHANGES";
-
-    public static String PASSIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.passive_location_update_action";
-    
-    public static String ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED = "com.github.ignition.location.active_location_update_provider_disabled";
-
-    public static String ACTIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.active_location_update_action";
-
-    public static String IGNITED_LOCATION_PROVIDER = "ignited_location_provider";
+    public static final String IGNITED_LOCATION_PROVIDER = "ignited_location_provider";
 
 }

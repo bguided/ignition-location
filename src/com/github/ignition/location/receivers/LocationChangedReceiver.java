@@ -50,7 +50,7 @@ public class LocationChangedReceiver extends BroadcastReceiver {
         if (intent.hasExtra(providerEnabledKey)) {
             if (!intent.getBooleanExtra(providerEnabledKey, true)) {
                 Intent providerDisabledIntent = new Intent(
-                        IgnitedLocationConstants.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED);
+                        IgnitedLocationConstants.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED_ACTION);
                 context.sendBroadcast(providerDisabledIntent);
             }
         }

@@ -21,12 +21,11 @@ import android.app.PendingIntent;
 import android.location.Criteria;
 import android.location.LocationManager;
 
-import com.github.ignition.location.IgnitedLocationConstants;
 import com.github.ignition.location.templates.LocationUpdateRequester;
 
 /**
- * Provides support for initiating active and passive location updates for all
- * Android platforms from Android 1.6.
+ * Provides support for initiating active and passive location updates for all Android platforms
+ * from Android 1.6.
  * <p/>
  * Uses broadcast Intents to notify the app of location changes.
  */
@@ -48,15 +47,15 @@ public class LegacyLocationUpdateRequester extends LocationUpdateRequester {
      * {@inheritDoc}
      */
     @Override
-    public void requestLocationUpdates(long minTime, long minDistance,
-            Criteria criteria, PendingIntent pendingIntent) {
+    public void requestLocationUpdates(long minTime, long minDistance, Criteria criteria,
+            PendingIntent pendingIntent) {
         // Prior to Gingerbread we needed to find the best provider manually.
         // Note that we aren't monitoring this provider to check if it becomes
         // disabled - this is handled by the calling Activity.
         String provider = this.locationManager.getBestProvider(criteria, true);
         if (provider != null) {
-            this.locationManager.requestLocationUpdates(provider, minTime,
-                    minDistance, pendingIntent);
+            this.locationManager.requestLocationUpdates(provider, minTime, minDistance,
+                    pendingIntent);
         }
     }
 
@@ -74,8 +73,6 @@ public class LegacyLocationUpdateRequester extends LocationUpdateRequester {
         // transitioned beyond the minimum time and
         // distance before initiating a background nearby loction update.
         this.alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-                System.currentTimeMillis()
-                        + IgnitedLocationConstants.LOCATION_UPDATE_MIN_TIME,
-                IgnitedLocationConstants.LOCATION_UPDATE_MIN_TIME, pendingIntent);
+                System.currentTimeMillis() + minTime, minDistance, pendingIntent);
     }
 }

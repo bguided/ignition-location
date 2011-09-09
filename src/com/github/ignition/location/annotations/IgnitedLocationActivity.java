@@ -20,16 +20,24 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.github.ignition.location.IgnitedLocationConstants;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface IgnitedLocationActivity {
 
-    boolean useGps() default false;
+    boolean useGps() default IgnitedLocationConstants.USE_GPS;
 
-    boolean refreshDataIfLocationChanges() default false;
+    boolean refreshDataIfLocationChanges() default IgnitedLocationConstants.REFRESH_DATA_ON_LOCATION_CHANGED;
 
-    int locationUpdateMinDistance() default 100;
+    int locationUpdateDistanceDiff() default IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF;
 
-    int locationUpdateInterval() default 5;
+    long locationUpdateInterval() default IgnitedLocationConstants.LOCATION_UPDATES_INTERVAL;
+
+    int passiveLocationUpdateDistanceDiff() default IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF;
+
+    long passiveLocationUpdateInterval() default IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL;
+
+    boolean disablePassiveUpdatesOnDestroy() default IgnitedLocationConstants.DISABLE_PASSIVE_LOCATION_WHEN_USER_EXIT;
 
 }
