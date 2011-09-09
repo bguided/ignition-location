@@ -45,3 +45,19 @@ repositories {
     mavenLocal()
 //    mavenRepo urls: 'https://raw.github.com/kaeppler/maven2/master'
 }
+
+// this will convert the project to an AspectJ project
+eclipse {
+    project {
+        natures 'org.eclipse.ajdt.ui.ajnature'
+        buildCommand = [
+            'org.eclipse.ajdt.core.ajbuilder',
+            'com.android.ide.eclipse.adt.PreCompilerBuilder',
+            'com.android.ide.eclipse.adt.ResourceManagerBuilder',
+            'com.android.ide.eclipse.adt.ApkBuilder'] as LinkedList
+    }
+
+    classpath {
+        containers.removeAll { it == 'org.eclipse.ajdt.core.ASPECTJRT_CONTAINER'}
+    }
+}
