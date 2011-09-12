@@ -36,6 +36,7 @@ dependencies {
     compile('com.github.ignition:ignition-support:0.1') {
         exclude module: 'android'
     }
+	compile('com.github.ignition:ignition-location:0.1')
     compile('org.aspectj:aspectjrt:1.6.11')
 //    ajc "org.aspectj:aspectjtools:1.6.11"
 }
@@ -43,21 +44,19 @@ dependencies {
 repositories {
     mavenCentral()
     mavenLocal()
-//    mavenRepo urls: 'https://raw.github.com/kaeppler/maven2/master'
+    mavenRepo urls: 'https://raw.github.com/stefanodacchille/m2/master'
 }
 
 // this will convert the project to an AspectJ project
 eclipse {
-    project {
-        natures 'org.eclipse.ajdt.ui.ajnature'
-        buildCommand = [
-            'org.eclipse.ajdt.core.ajbuilder',
-            'com.android.ide.eclipse.adt.PreCompilerBuilder',
-            'com.android.ide.eclipse.adt.ResourceManagerBuilder',
-            'com.android.ide.eclipse.adt.ApkBuilder'] as LinkedList
-    }
+	project {
+		natures 'org.eclipse.ajdt.ui.ajnature'
 
-    classpath {
-        containers.removeAll { it == 'org.eclipse.ajdt.core.ASPECTJRT_CONTAINER'}
-    }
-}
+		buildCommands.clear()
+		buildCommand('com.android.ide.eclipse.adt.PreCompilerBuilder')
+		buildCommand('com.android.ide.eclipse.adt.ResourceManagerBuilder')
+		buildCommand('org.eclipse.ajdt.core.ajbuilder')
+		buildCommand('com.android.ide.eclipse.adt.ApkBuilder')
+	}
+
+    classpath { containers.removeAll { it == 'org.eclipse.ajdt.core.ASPECTJRT_CONTAINER'} } }
