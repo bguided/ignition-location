@@ -30,7 +30,7 @@
 
         <receiver android:name="com.github.ignition.location.receivers.LocationChangedReceiver" >
             <intent-filter >
-                <action android:name="com.github.ignition.location.receivers.ACTIVE_LOCATION_UPDATE_ACTION" />
+                <action android:name="com.github.ignition.location.ACTIVE_LOCATION_UPDATE_ACTION" />
             </intent-filter>
         </receiver>
         <receiver
