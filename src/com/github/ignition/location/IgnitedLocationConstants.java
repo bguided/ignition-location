@@ -45,7 +45,7 @@ public class IgnitedLocationConstants {
     public static String SP_KEY_PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF = "sp_passive_location_updates_distance_diff";
     public static String SP_KEY_PASSIVE_LOCATION_UPDATES_INTERVAL = "sp_key_passive_location_updates_interval";
 
-    public static final String PASSIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.passive_location_update_action";
+//    public static final String PASSIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.passive_location_update_action";
     public static final String ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED_ACTION = "com.github.ignition.location.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED_ACTION";
     public static final String ACTIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.ACTIVE_LOCATION_UPDATE_ACTION";
 
