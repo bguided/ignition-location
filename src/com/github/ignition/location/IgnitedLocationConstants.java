@@ -25,7 +25,7 @@ public class IgnitedLocationConstants {
     // The maximum distance the user should travel between location updates.
     public static final int LOCATION_UPDATES_DISTANCE_DIFF = 100; // meters
     // The maximum time that should pass before the user gets a location update.
-    public static final long LOCATION_UPDATES_INTERVAL = 5; // minutes
+    public static final long LOCATION_UPDATES_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
     // You will generally want passive location updates to occur less frequently
     // than active updates. You need to balance location freshness with battery
