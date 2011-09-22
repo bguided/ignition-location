@@ -70,7 +70,7 @@ public aspect IgnitedLocationManager {
 
     private static volatile Location currentLocation;
 
-    private static boolean refreshDataIfLocationChanges, disablePassiveLocationUpdatesOnDestroy;
+    private static boolean refreshDataIfLocationChanges, enablePassiveLocationUpdates;
 
     private static long locationUpdateInterval;
 
@@ -151,11 +151,9 @@ public aspect IgnitedLocationManager {
 
     after() : execution(* Activity.onCreate(..)) && @this(IgnitedLocationActivity) {
         // Get a reference to the Activity Context
-
-        disablePassiveLocationUpdatesOnDestroy = locationAnnotation
-                .disablePassiveUpdatesOnDestroy();
         context = new WeakReference<Context>((Context) thisJoinPoint.getThis());
         locationAnnotation = context.get().getClass().getAnnotation(IgnitedLocationActivity.class);
+        enablePassiveLocationUpdates = locationAnnotation.enablePassiveUpdates();
         locationUpdateDistanceDiff = locationAnnotation.locationUpdateDistanceDiff();
         locationUpdateInterval = locationAnnotation.locationUpdateInterval();
         int passiveLocationUpdateDistanceDiff = locationAnnotation
@@ -168,7 +166,7 @@ public aspect IgnitedLocationManager {
                 IgnitedLocationConstants.SHARED_PREFERENCE_FILE, Context.MODE_PRIVATE);
         Editor editor = prefs.edit();
         editor.putBoolean(IgnitedLocationConstants.SP_KEY_FOLLOW_LOCATION_CHANGES,
-                disablePassiveLocationUpdatesOnDestroy);
+                enablePassiveLocationUpdates);
         editor.putInt(IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_DISTANCE_DIFF,
                 locationUpdateDistanceDiff);
         editor.putLong(IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_INTERVAL,
@@ -302,6 +300,8 @@ public aspect IgnitedLocationManager {
             locationManager.requestLocationUpdates(bestProvider, 0, 0,
                     bestInactiveLocationProviderListener, context.get().getMainLooper());
         }
+
+        locationManager.removeUpdates(locationListenerPassivePendingIntent);
     }
 
     /**
@@ -317,8 +317,11 @@ public aspect IgnitedLocationManager {
         if (finishing) {
             lastLocationFinder.cancel();
         }
-        if (disablePassiveLocationUpdatesOnDestroy && finishing) {
-            locationManager.removeUpdates(locationListenerPassivePendingIntent);
+        if (IgnitedDiagnostics.SUPPORTS_FROYO && enablePassiveLocationUpdates) {
+            // Passive location updates from 3rd party apps when the Activity isn't
+            // visible. Only for Android 2.2+.
+            locationUpdateRequester.requestPassiveLocationUpdates(locationUpdateInterval,
+                    locationUpdateDistanceDiff, locationListenerPassivePendingIntent);
         }
     }
 
@@ -332,9 +335,8 @@ public aspect IgnitedLocationManager {
         // of within the min distance between updates
         // and a required latency of the minimum time required between
         // updates.
-        Location lastKnownLocation = IgnitedLocationManager.this.lastLocationFinder
-                .getLastBestLocation(locationUpdateDistanceDiff, System.currentTimeMillis()
-                        - locationUpdateInterval);
+        Location lastKnownLocation = lastLocationFinder.getLastBestLocation(
+                locationUpdateDistanceDiff, System.currentTimeMillis() - locationUpdateInterval);
 
         return lastKnownLocation;
     }
