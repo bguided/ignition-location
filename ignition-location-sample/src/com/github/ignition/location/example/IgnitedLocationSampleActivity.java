@@ -35,7 +35,7 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     private Location currentLocation;
 
     // Make sure the onCreate() method is overridden in your Activity or
-    // the ignition-location library won't work properly
+    // the ignition-location library won't work as expected
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,24 +62,17 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     }
 
     // Make sure the onResume() method is overridden in your Activity or
-    // the ignition-location library won't work properly
+    // the ignition-location library as expected
     @Override
     protected void onResume() {
         super.onResume();
     }
 
-    // Make sure the onPause() method is overridden in your Activity or
-    // the ignition-location library won't work properly
+ // Make sure the onPause() method is overridden in your Activity or
+    // the ignition-location library as expected
     @Override
     protected void onPause() {
         super.onPause();
-    }
-    
-    // Make sure the onDestroy() method is overridden in your Activity or
-    // the ignition-location library won't work properly
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     // This callback is called every time the Location Manager has got a new
