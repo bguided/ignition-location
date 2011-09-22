@@ -91,9 +91,8 @@ public class PassiveLocationChangedReceiver extends BroadcastReceiver {
         }
 
         if (location != null) {
+            Log.d(LOG_TAG, "Passively updating location...");
             currentLocation = location;
-            Log.d(LOG_TAG, "Passively updating location. New location (lat, long): "
-                    + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
         }
 
     }

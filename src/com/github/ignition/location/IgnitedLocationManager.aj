@@ -226,11 +226,13 @@ public aspect IgnitedLocationManager {
             protected void onPostExecute(Location lastKnownLocation) {
                 currentLocation = lastKnownLocation;
                 if (currentLocation != null) {
-                    Log.d(LOG_TAG,
-                            "Last known location (lat, long): " + currentLocation.getLatitude()
-                                    + ", " + currentLocation.getLongitude());
                     if (context != null) {
                         ((OnIgnitedLocationChangedListener) context)
+                    Log.d(LOG_TAG, "Last known location");
+                    currentLocation = lastKnownLocation;
+                    // Log.d(LOG_TAG, "Last known location from " + currentLocation.getProvider()
+                    // + " (lat, long): " + currentLocation.getLatitude() + ", "
+                    // + currentLocation.getLongitude());
                                 .onIgnitedLocationChanged(currentLocation);
                     }
                 }
@@ -259,8 +261,8 @@ public aspect IgnitedLocationManager {
         currentLocation = freshLocation;
         if (context != null) {
             ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(currentLocation);
-            Log.d(LOG_TAG, "New location (lat, long): " + currentLocation.getLatitude() + ", "
-                    + currentLocation.getLongitude());
+        Log.d(LOG_TAG, "New location from " + currentLocation.getProvider() + " (lat, long): "
+                + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
         }
     }
 
