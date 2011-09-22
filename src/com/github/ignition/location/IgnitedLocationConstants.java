@@ -30,12 +30,12 @@ public class IgnitedLocationConstants {
     // You will generally want passive location updates to occur less frequently
     // than active updates. You need to balance location freshness with battery
     // life. The location update distance for passive updates.
-    public static final int PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF = LOCATION_UPDATES_DISTANCE_DIFF; // meters
+    public static final int PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF = LOCATION_UPDATES_DISTANCE_DIFF;
     // The location update time for passive updates
-    public static final long PASSIVE_LOCATION_UPDATES_INTERVAL = 15; // minutes
+    public static final long PASSIVE_LOCATION_UPDATES_INTERVAL = LOCATION_UPDATES_INTERVAL * 3;
     // When the user exits via the back button, do you want to disable
     // passive background updates.
-    public static final boolean DISABLE_PASSIVE_LOCATION_WHEN_USER_EXIT = false;
+    public static final boolean ENABLE_PASSIVE_LOCATION_WHEN_USER_EXITS = true;
 
     public static final String SHARED_PREFERENCE_FILE = "IgnitedLocationManagerPreference";
     public static final String SP_KEY_RUN_ONCE = "sp_key_run_once";
@@ -45,7 +45,8 @@ public class IgnitedLocationConstants {
     public static String SP_KEY_PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF = "sp_passive_location_updates_distance_diff";
     public static String SP_KEY_PASSIVE_LOCATION_UPDATES_INTERVAL = "sp_key_passive_location_updates_interval";
 
-//    public static final String PASSIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.passive_location_update_action";
+    // public static final String PASSIVE_LOCATION_UPDATE_ACTION =
+    // "com.github.ignition.location.passive_location_update_action";
     public static final String ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED_ACTION = "com.github.ignition.location.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED_ACTION";
     public static final String ACTIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.ACTIVE_LOCATION_UPDATE_ACTION";
 
