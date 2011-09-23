@@ -38,6 +38,6 @@ public @interface IgnitedLocationService {
 
     long passiveLocationUpdateInterval() default IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL;
 
-    boolean disablePassiveUpdatesOnDestroy() default IgnitedLocationConstants.DISABLE_PASSIVE_LOCATION_WHEN_USER_EXIT;
+    boolean disablePassiveUpdatesOnDestroy() default IgnitedLocationConstants.ENABLE_PASSIVE_LOCATION_WHEN_USER_EXITS;
 
 }
