@@ -149,7 +149,8 @@ public aspect IgnitedLocationManager {
         }
     };
 
-    after() : execution(* Activity.onCreate(..)) && @this(IgnitedLocationActivity) {
+    after() : execution(* Activity.onCreate(..)) && @this(IgnitedLocationActivity) 
+        && within(@IgnitedLocationActivity *) {
         // Get a reference to the Activity Context
         context = new WeakReference<Context>((Context) thisJoinPoint.getThis());
         locationAnnotation = context.get().getClass().getAnnotation(IgnitedLocationActivity.class);
@@ -213,6 +214,7 @@ public aspect IgnitedLocationManager {
     }
 
     after() : execution(* Activity.onResume(..)) && @this(IgnitedLocationActivity) 
+        && within(@IgnitedLocationActivity *)
         && if (refreshDataIfLocationChanges) {
         if (context.get() == null) {
             context = new WeakReference<Context>((Context) thisJoinPoint.getThis());
@@ -254,6 +256,7 @@ public aspect IgnitedLocationManager {
     }
 
     after() : execution(* Activity.onPause(..)) && @this(IgnitedLocationActivity) 
+        && within(@IgnitedLocationActivity *)
         && if (refreshDataIfLocationChanges) {
         disableLocationUpdates();
     }
