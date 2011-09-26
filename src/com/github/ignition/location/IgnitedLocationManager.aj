@@ -219,6 +219,7 @@ public aspect IgnitedLocationManager {
             context = new WeakReference<Context>((Context) thisJoinPoint.getThis());
         }
         if (currentLocation != null) {
+            Log.d(LOG_TAG, "last known location...");
             ((OnIgnitedLocationChangedListener) context.get())
                     .onIgnitedLocationChanged(currentLocation);
             return;
@@ -236,7 +237,7 @@ public aspect IgnitedLocationManager {
             @Override
             protected void onPostExecute(Location lastKnownLocation) {
                 if (lastKnownLocation != null) {
-                    Log.d(LOG_TAG, "Last known location");
+                    Log.d(LOG_TAG, "last known location...");
                     currentLocation = lastKnownLocation;
                     // Log.d(LOG_TAG, "Last known location from " + currentLocation.getProvider()
                     // + " (lat, long): " + currentLocation.getLatitude() + ", "
@@ -244,7 +245,6 @@ public aspect IgnitedLocationManager {
                     if (context.get() != null) {
                         ((OnIgnitedLocationChangedListener) context.get())
                                 .onIgnitedLocationChanged(currentLocation);
-                        Log.d(LOG_TAG, "Listeners notified");
                     }
                 }
                 if (refreshDataIfLocationChanges) {
