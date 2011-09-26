@@ -213,7 +213,7 @@ public aspect IgnitedLocationManager {
 
     }
 
-    after() : execution(* Activity.onResume(..)) && @this(IgnitedLocationActivity) 
+    before() : execution(* Activity.onResume(..)) && @this(IgnitedLocationActivity) 
         && within(@IgnitedLocationActivity *)
         && if (refreshDataIfLocationChanges) {
         if (context.get() == null) {
