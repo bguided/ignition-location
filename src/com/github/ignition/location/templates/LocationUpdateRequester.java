@@ -54,4 +54,5 @@ public abstract class LocationUpdateRequester {
    * @param pendingIntent The Pending Intent to broadcast to notify the app of passive location changes.
    */
   public void requestPassiveLocationUpdates(long minTime, long minDistance, PendingIntent pendingIntent) {}
+    protected static final String TAG = "IgnitedLocationUpdateRequester";
 }

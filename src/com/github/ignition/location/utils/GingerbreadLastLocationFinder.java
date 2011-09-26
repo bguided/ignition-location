@@ -43,9 +43,6 @@ import com.github.ignition.location.templates.ILastLocationFinder;
  * find the current location.
  */
 public class GingerbreadLastLocationFinder implements ILastLocationFinder {
-
-    protected static String TAG = GingerbreadLastLocationFinder.class
-            .getSimpleName();
     protected static String SINGLE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.SINGLE_LOCATION_UPDATE_ACTION";
 
     protected PendingIntent singleUpatePI;
@@ -154,12 +151,10 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
             String key = LocationManager.KEY_LOCATION_CHANGED;
             Location location = (Location) intent.getExtras().get(key);
 
-            Log.d(TAG, "...just got a brand new location (lat, long): " + 
-            location.getLatitude() + ", " + location.getLongitude() + " .");
-            if ((GingerbreadLastLocationFinder.this.locationListener != null)
-                    && (location != null)) {
-                GingerbreadLastLocationFinder.this.locationListener
-                        .onLocationChanged(location);
+            Log.d(TAG, "...just got a brand new location from " + location.getProvider() + " (lat, long): " + location.getLatitude()
+                    + ", " + location.getLongitude());
+            if ((GingerbreadLastLocationFinder.this.locationListener != null) && (location != null)) {
+                GingerbreadLastLocationFinder.this.locationListener.onLocationChanged(location);
             }
 
             GingerbreadLastLocationFinder.this.locationManager

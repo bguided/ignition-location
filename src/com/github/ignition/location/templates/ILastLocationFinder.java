@@ -54,4 +54,5 @@ public interface ILastLocationFinder {
    * Cancel the one-shot current location update.
    */
   public void cancel();
+    static final String TAG = "IgnitedLastLocationFinder";
 }
