@@ -214,8 +214,7 @@ public aspect IgnitedLocationManager {
     }
 
     before() : execution(* Activity.onResume(..)) && @this(IgnitedLocationActivity) 
-        && within(@IgnitedLocationActivity *)
-        && if (refreshDataIfLocationChanges) {
+        && within(@IgnitedLocationActivity *) {
         if (context.get() == null) {
             context = new WeakReference<Context>((Context) thisJoinPoint.getThis());
         }
@@ -248,11 +247,12 @@ public aspect IgnitedLocationManager {
                         Log.d(LOG_TAG, "Listeners notified");
                     }
                 }
-                // If we have requested location updates, turn them on here.
-                toggleUpdatesWhenLocationChanges();
+                if (refreshDataIfLocationChanges) {
+                    // If we have requested location updates, turn them on here.
+                    requestLocationUpdates();
+                }
             }
         }.execute();
-
     }
 
     after() : execution(* Activity.onPause(..)) && @this(IgnitedLocationActivity) 
@@ -342,18 +342,6 @@ public aspect IgnitedLocationManager {
                 locationUpdateDistanceDiff, System.currentTimeMillis() - locationUpdateInterval);
 
         return lastKnownLocation;
-    }
-
-    /**
-     * Choose if we should receive location updates.
-     */
-    protected void toggleUpdatesWhenLocationChanges() {
-        // Start or stop listening for location changes
-        if (refreshDataIfLocationChanges) {
-            requestLocationUpdates();
-        } else {
-            disableLocationUpdates();
-        }
     }
 
 }
