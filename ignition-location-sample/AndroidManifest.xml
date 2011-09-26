@@ -5,7 +5,7 @@
 
     <uses-sdk android:minSdkVersion="4" />
 
-    <!-- all the following are necessary in order for the ignition-location 
+    <!-- these permissions are necessary in order for the ignition-location 
         library to work -->
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />

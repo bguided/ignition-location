@@ -32,15 +32,13 @@ import android.util.Log;
 import com.github.ignition.location.templates.ILastLocationFinder;
 
 /**
- * Optimized implementation of Last Location Finder for devices running
- * Gingerbread and above.
+ * Optimized implementation of Last Location Finder for devices running Gingerbread and above.
  * <p/>
- * This class let's you find the "best" (most accurate and timely) previously
- * detected location using whatever providers are available.
+ * This class let's you find the "best" (most accurate and timely) previously detected location
+ * using whatever providers are available.
  * <p/>
- * Where a timely / accurate previous location is not detected it will return
- * the newest location (where one exists) and setup a oneshot location update to
- * find the current location.
+ * Where a timely / accurate previous location is not detected it will return the newest location
+ * (where one exists) and setup a oneshot location update to find the current location.
  */
 public class GingerbreadLastLocationFinder implements ILastLocationFinder {
     protected static String SINGLE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.SINGLE_LOCATION_UPDATE_ACTION";
@@ -59,8 +57,7 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
      */
     public GingerbreadLastLocationFinder(Context context) {
         this.context = context;
-        this.locationManager = (LocationManager) context
-                .getSystemService(Context.LOCATION_SERVICE);
+        this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         // Coarse accuracy is specified here to get the fastest possible result.
         // The calling Activity will likely (or have already) request ongoing
         // updates using the Fine location provider.
@@ -70,15 +67,14 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
         // Construct the Pending Intent that will be broadcast by the oneshot
         // location update.
         Intent updateIntent = new Intent(SINGLE_LOCATION_UPDATE_ACTION);
-        this.singleUpatePI = PendingIntent.getBroadcast(context, 0,
-                updateIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        this.singleUpatePI = PendingIntent.getBroadcast(context, 0, updateIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**
-     * Returns the most accurate and timely previously detected location. Where
-     * the last result is beyond the specified maximum distance or latency a
-     * one-off location update is returned via the {@link LocationListener}
-     * specified in {@link setChangedLocationListener}.
+     * Returns the most accurate and timely previously detected location. Where the last result is
+     * beyond the specified maximum distance or latency a one-off location update is returned via
+     * the {@link LocationListener} specified in {@link setChangedLocationListener}.
      * 
      * @param minDistance
      *            Minimum distance before we require a location update.
@@ -97,8 +93,7 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
         // If no result is found within maxTime, return the newest Location.
         List<String> matchingProviders = this.locationManager.getAllProviders();
         for (String provider : matchingProviders) {
-            Location location = this.locationManager
-                    .getLastKnownLocation(provider);
+            Location location = this.locationManager.getLastKnownLocation(provider);
             if (location != null) {
                 float accuracy = location.getAccuracy();
                 long time = location.getTime();
@@ -107,8 +102,7 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
                     bestResult = location;
                     bestAccuracy = accuracy;
                     bestTime = time;
-                } else if ((time < minTime)
-                        && (bestAccuracy == Float.MAX_VALUE)
+                } else if ((time < minTime) && (bestAccuracy == Float.MAX_VALUE)
                         && (time > bestTime)) {
                     bestResult = location;
                     bestTime = time;
@@ -126,21 +120,17 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
         if ((this.locationListener != null)
                 && ((bestTime < minTime) || (bestAccuracy > minDistance))) {
             Log.d(TAG, "Last location is too old. Retrieving a new one...");
-            IntentFilter locIntentFilter = new IntentFilter(
-                    SINGLE_LOCATION_UPDATE_ACTION);
-            this.context.registerReceiver(this.singleUpdateReceiver,
-                    locIntentFilter);
-            this.locationManager.requestSingleUpdate(this.criteria,
-                    this.singleUpatePI);
+            IntentFilter locIntentFilter = new IntentFilter(SINGLE_LOCATION_UPDATE_ACTION);
+            this.context.registerReceiver(this.singleUpdateReceiver, locIntentFilter);
+            this.locationManager.requestSingleUpdate(this.criteria, this.singleUpatePI);
         }
 
         return bestResult;
     }
 
     /**
-     * This {@link BroadcastReceiver} listens for a single location update
-     * before unregistering itself. The oneshot location update is returned via
-     * the {@link LocationListener} specified in
+     * This {@link BroadcastReceiver} listens for a single location update before unregistering
+     * itself. The oneshot location update is returned via the {@link LocationListener} specified in
      * {@link setChangedLocationListener}.
      */
     protected BroadcastReceiver singleUpdateReceiver = new BroadcastReceiver() {
