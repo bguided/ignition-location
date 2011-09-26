@@ -236,7 +236,7 @@ public aspect IgnitedLocationManager {
 
             @Override
             protected void onPostExecute(Location lastKnownLocation) {
-                if (currentLocation != null) {
+                if (lastKnownLocation != null) {
                     Log.d(LOG_TAG, "Last known location");
                     currentLocation = lastKnownLocation;
                     // Log.d(LOG_TAG, "Last known location from " + currentLocation.getProvider()
