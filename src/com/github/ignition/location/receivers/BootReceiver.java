@@ -51,7 +51,7 @@ public class BootReceiver extends BroadcastReceiver {
             if (followLocationChanges && IgnitedDiagnostics.SUPPORTS_FROYO) {
                 // Passive location updates from 3rd party apps when the
                 // Activity isn't visible.
-                Intent passiveIntent = new Intent(context, PassiveLocationChangedReceiver.class);
+                Intent passiveIntent = new Intent(context, IgnitedPassiveLocationChangedReceiver.class);
                 PendingIntent locationListenerPassivePendingIntent = PendingIntent.getBroadcast(
                         context, 0, passiveIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 

@@ -40,8 +40,8 @@ public class PlatformSpecificImplementationFactory {
 	 * @return LastLocationFinder
 	 */
 	public static ILastLocationFinder getLastLocationFinder(Context context) {
-		return IgnitedDiagnostics.SUPPORTS_GINGERBREAD ? new GingerbreadLastLocationFinder(
-				context) : new LegacyLastLocationFinder(context);
+		return IgnitedDiagnostics.SUPPORTS_GINGERBREAD ? new IgnitedGingerbreadLastLocationFinder(
+				context) : new IgnitedLegacyLastLocationFinder(context);
 	}
 
 	/**

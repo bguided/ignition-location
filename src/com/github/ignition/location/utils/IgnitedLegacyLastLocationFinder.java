@@ -18,60 +18,50 @@ package com.github.ignition.location.utils;
 
 import java.util.List;
 
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.templates.ILastLocationFinder;
 
 /**
- * Optimized implementation of Last Location Finder for devices running Gingerbread and above.
- * <p/>
+ * Legacy implementation of Last Location Finder for all Android platforms down to Android 1.6.
+ * 
  * This class let's you find the "best" (most accurate and timely) previously detected location
  * using whatever providers are available.
- * <p/>
+ * 
  * Where a timely / accurate previous location is not detected it will return the newest location
- * (where one exists) and setup a oneshot location update to find the current location.
+ * (where one exists) and setup a one-off location update to find the current location.
  */
-public class GingerbreadLastLocationFinder implements ILastLocationFinder {
-    protected static String SINGLE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.SINGLE_LOCATION_UPDATE_ACTION";
+public class IgnitedLegacyLastLocationFinder implements ILastLocationFinder {
+    protected static String LOG_TAG = IgnitedLegacyLastLocationFinder.class.getSimpleName();
 
     @SuppressWarnings("unused")
     @IgnitedLocation
     private Location currentLocation;
 
-    protected PendingIntent singleUpatePI;
     protected LocationManager locationManager;
     protected Criteria criteria;
 
     /**
-     * Construct a new Gingerbread Last Location Finder.
+     * Construct a new Legacy Last Location Finder.
      * 
-     * @param Appc
+     * @param context
      *            Context
      */
-    public GingerbreadLastLocationFinder(Context appContext) {
+    public IgnitedLegacyLastLocationFinder(Context appContext) {
         this.locationManager = (LocationManager) appContext
                 .getSystemService(Context.LOCATION_SERVICE);
+        this.criteria = new Criteria();
         // Coarse accuracy is specified here to get the fastest possible result.
         // The calling Activity will likely (or have already) request ongoing
         // updates using the Fine location provider.
-        this.criteria = new Criteria();
         this.criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-
-        // Construct the Pending Intent that will be broadcast by the oneshot
-        // location update.
-        Intent updateIntent = new Intent(SINGLE_LOCATION_UPDATE_ACTION);
-        this.singleUpatePI = PendingIntent.getBroadcast(appContext, 0, updateIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**
@@ -89,7 +79,7 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
     public Location getLastBestLocation(Context context, int minDistance, long minTime) {
         Location bestResult = null;
         float bestAccuracy = Float.MAX_VALUE;
-        long bestTime = Long.MIN_VALUE;
+        long bestTime = Long.MAX_VALUE;
 
         // Iterate through all the providers on the system, keeping
         // note of the most accurate result within the acceptable time limit.
@@ -101,12 +91,12 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
                 float accuracy = location.getAccuracy();
                 long time = location.getTime();
 
-                if (((time > minTime) && (accuracy < bestAccuracy))) {
+                if (((time < minTime) && (accuracy < bestAccuracy))) {
                     bestResult = location;
                     bestAccuracy = accuracy;
                     bestTime = time;
-                } else if ((time < minTime) && (bestAccuracy == Float.MAX_VALUE)
-                        && (time > bestTime)) {
+                } else if ((time > minTime) && (bestAccuracy == Float.MAX_VALUE)
+                        && (time < bestTime)) {
                     bestResult = location;
                     bestTime = time;
                 }
@@ -114,43 +104,51 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
         }
 
         // If the best result is beyond the allowed time limit, or the accuracy
-        // of the
-        // best result is wider than the acceptable maximum distance, request a
-        // single update.
+        // of the best result is wider than the acceptable maximum distance,
+        // request a single update.
         // This check simply implements the same conditions we set when
-        // requesting regular
-        // location updates every [minTime] and [minDistance].
-        if ((bestTime < minTime) || (bestAccuracy > minDistance)) {
-            Log.d(LOG_TAG, "Last location is too old. Retrieving a new one...");
-            IntentFilter locIntentFilter = new IntentFilter(SINGLE_LOCATION_UPDATE_ACTION);
-            context.registerReceiver(this.singleUpdateReceiver, locIntentFilter);
-            this.locationManager.requestSingleUpdate(this.criteria, this.singleUpatePI);
+        // requesting regular location updates every [minTime] and
+        // [minDistance].
+        // Prior to Gingerbread "one-shot" updates weren't available, so we need
+        // to implement this manually.
+        if (((bestTime > minTime) || (bestAccuracy > minDistance))) {
+            String provider = this.locationManager.getBestProvider(this.criteria, true);
+            if (provider != null) {
+                this.locationManager.requestLocationUpdates(provider, 0, 0,
+                        this.singeUpdateListener, context.getMainLooper());
+            }
         }
 
         return bestResult;
     }
 
     /**
-     * This {@link BroadcastReceiver} listens for a single location update before unregistering
-     * itself. The oneshot location update is returned via the {@link LocationListener} specified in
-     * {@link setChangedLocationListener}.
+     * This one-off {@link LocationListener} simply listens for a single location update before
+     * unregistering itself. The one-off location update is returned via the
+     * {@link LocationListener} specified in {@link setChangedLocationListener}.
      */
-    protected BroadcastReceiver singleUpdateReceiver = new BroadcastReceiver() {
+    protected LocationListener singeUpdateListener = new LocationListener() {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            context.unregisterReceiver(GingerbreadLastLocationFinder.this.singleUpdateReceiver);
-
-            String key = LocationManager.KEY_LOCATION_CHANGED;
-            Location location = (Location) intent.getExtras().get(key);
-
-            Log.d(LOG_TAG, "...just got a brand new location from " + location.getProvider()
+        public void onLocationChanged(Location location) {
+            Log.d(LOG_TAG, "Single Location Update Received from " + location.getProvider()
                     + " (lat, long): " + location.getLatitude() + ", " + location.getLongitude());
             if (location != null) {
                 currentLocation = location;
             }
+            IgnitedLegacyLastLocationFinder.this.locationManager
+                    .removeUpdates(IgnitedLegacyLastLocationFinder.this.singeUpdateListener);
+        }
 
-            GingerbreadLastLocationFinder.this.locationManager
-                    .removeUpdates(GingerbreadLastLocationFinder.this.singleUpatePI);
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
         }
     };
 
@@ -159,6 +157,6 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
      */
     @Override
     public void cancel() {
-        this.locationManager.removeUpdates(this.singleUpatePI);
+        this.locationManager.removeUpdates(this.singeUpdateListener);
     }
 }

@@ -31,11 +31,11 @@ import com.github.ignition.location.annotations.IgnitedLocation;
  * has occurred. This is used instead of a LocationListener within an Activity is our only action is
  * to start a service.
  */
-public class LocationChangedReceiver extends BroadcastReceiver {
+public class IgnitedLocationChangedReceiver extends BroadcastReceiver {
     @IgnitedLocation
     Location currentLocation;
 
-    protected static String LOG_TAG = LocationChangedReceiver.class.getSimpleName();
+    protected static String LOG_TAG = IgnitedLocationChangedReceiver.class.getSimpleName();
 
     /**
      * When a new location is received, extract it from the Intent and use it to start the Service

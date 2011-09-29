@@ -38,7 +38,7 @@ import android.util.Log;
 
 import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.annotations.IgnitedLocationActivity;
-import com.github.ignition.location.receivers.PassiveLocationChangedReceiver;
+import com.github.ignition.location.receivers.IgnitedPassiveLocationChangedReceiver;
 import com.github.ignition.location.templates.ILastLocationFinder;
 import com.github.ignition.location.templates.LocationUpdateRequester;
 import com.github.ignition.location.templates.OnIgnitedLocationChangedListener;
@@ -138,7 +138,7 @@ public aspect IgnitedLocationManager {
         locationListenerPendingIntent = PendingIntent.getBroadcast(context, 0, activeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Intent passiveIntent = new Intent(context, PassiveLocationChangedReceiver.class);
+        Intent passiveIntent = new Intent(context, IgnitedPassiveLocationChangedReceiver.class);
         locationListenerPassivePendingIntent = PendingIntent.getBroadcast(context, 0,
                 passiveIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 

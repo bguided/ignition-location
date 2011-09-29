@@ -27,7 +27,7 @@ import android.util.Log;
 
 import com.github.ignition.location.IgnitedLocationConstants;
 import com.github.ignition.location.annotations.IgnitedLocation;
-import com.github.ignition.location.utils.LegacyLastLocationFinder;
+import com.github.ignition.location.utils.IgnitedLegacyLastLocationFinder;
 
 /**
  * This Receiver class is used to listen for Broadcast Intents that announce that a location change
@@ -35,9 +35,9 @@ import com.github.ignition.location.utils.LegacyLastLocationFinder;
  * 
  * Where possible, this is triggered by a Passive Location listener.
  */
-public class PassiveLocationChangedReceiver extends BroadcastReceiver {
+public class IgnitedPassiveLocationChangedReceiver extends BroadcastReceiver {
 
-    protected static String LOG_TAG = PassiveLocationChangedReceiver.class.getSimpleName();
+    protected static String LOG_TAG = IgnitedPassiveLocationChangedReceiver.class.getSimpleName();
 
     @IgnitedLocation
     private Location currentLocation;
@@ -73,8 +73,9 @@ public class PassiveLocationChangedReceiver extends BroadcastReceiver {
                     IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF);
 
             // Get the best last location detected from the providers.
-            LegacyLastLocationFinder lastLocationFinder = new LegacyLastLocationFinder(context);
-            location = lastLocationFinder.getLastBestLocation(locationUpdateDistanceDiff,
+            IgnitedLegacyLastLocationFinder lastLocationFinder = new IgnitedLegacyLastLocationFinder(
+                    context);
+            location = lastLocationFinder.getLastBestLocation(context, locationUpdateDistanceDiff,
                     System.currentTimeMillis() - locationUpdateInterval);
 
             // Check if the last location detected from the providers is either

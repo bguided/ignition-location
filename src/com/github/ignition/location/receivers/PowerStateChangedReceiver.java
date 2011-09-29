@@ -38,7 +38,7 @@ public class PowerStateChangedReceiver extends BroadcastReceiver {
 
         PackageManager pm = context.getPackageManager();
         ComponentName passiveLocationReceiver = new ComponentName(context,
-                PassiveLocationChangedReceiver.class);
+                IgnitedPassiveLocationChangedReceiver.class);
 
         // Disable the passive location update receiver when the battery state
         // is low.
