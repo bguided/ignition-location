@@ -29,6 +29,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.util.Log;
 
+import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.templates.ILastLocationFinder;
 
 /**
@@ -43,21 +44,23 @@ import com.github.ignition.location.templates.ILastLocationFinder;
 public class GingerbreadLastLocationFinder implements ILastLocationFinder {
     protected static String SINGLE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.SINGLE_LOCATION_UPDATE_ACTION";
 
+    @SuppressWarnings("unused")
+    @IgnitedLocation
+    private Location currentLocation;
+
     protected PendingIntent singleUpatePI;
-    protected LocationListener locationListener;
     protected LocationManager locationManager;
-    protected Context context;
     protected Criteria criteria;
 
     /**
      * Construct a new Gingerbread Last Location Finder.
      * 
-     * @param context
+     * @param Appc
      *            Context
      */
-    public GingerbreadLastLocationFinder(Context context) {
-        this.context = context;
-        this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+    public GingerbreadLastLocationFinder(Context appContext) {
+        this.locationManager = (LocationManager) appContext
+                .getSystemService(Context.LOCATION_SERVICE);
         // Coarse accuracy is specified here to get the fastest possible result.
         // The calling Activity will likely (or have already) request ongoing
         // updates using the Fine location provider.
@@ -67,7 +70,7 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
         // Construct the Pending Intent that will be broadcast by the oneshot
         // location update.
         Intent updateIntent = new Intent(SINGLE_LOCATION_UPDATE_ACTION);
-        this.singleUpatePI = PendingIntent.getBroadcast(context, 0, updateIntent,
+        this.singleUpatePI = PendingIntent.getBroadcast(appContext, 0, updateIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -83,7 +86,7 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
      * @return The most accurate and / or timely previously detected location.
      */
     @Override
-    public Location getLastBestLocation(int minDistance, long minTime) {
+    public Location getLastBestLocation(Context context, int minDistance, long minTime) {
         Location bestResult = null;
         float bestAccuracy = Float.MAX_VALUE;
         long bestTime = Long.MIN_VALUE;
@@ -117,11 +120,10 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
         // This check simply implements the same conditions we set when
         // requesting regular
         // location updates every [minTime] and [minDistance].
-        if ((this.locationListener != null)
-                && ((bestTime < minTime) || (bestAccuracy > minDistance))) {
-            Log.d(TAG, "Last location is too old. Retrieving a new one...");
+        if ((bestTime < minTime) || (bestAccuracy > minDistance)) {
+            Log.d(LOG_TAG, "Last location is too old. Retrieving a new one...");
             IntentFilter locIntentFilter = new IntentFilter(SINGLE_LOCATION_UPDATE_ACTION);
-            this.context.registerReceiver(this.singleUpdateReceiver, locIntentFilter);
+            context.registerReceiver(this.singleUpdateReceiver, locIntentFilter);
             this.locationManager.requestSingleUpdate(this.criteria, this.singleUpatePI);
         }
 
@@ -141,24 +143,16 @@ public class GingerbreadLastLocationFinder implements ILastLocationFinder {
             String key = LocationManager.KEY_LOCATION_CHANGED;
             Location location = (Location) intent.getExtras().get(key);
 
-            Log.d(TAG, "...just got a brand new location from " + location.getProvider() + " (lat, long): " + location.getLatitude()
-                    + ", " + location.getLongitude());
-            if ((GingerbreadLastLocationFinder.this.locationListener != null) && (location != null)) {
-                GingerbreadLastLocationFinder.this.locationListener.onLocationChanged(location);
+            Log.d(LOG_TAG, "...just got a brand new location from " + location.getProvider()
+                    + " (lat, long): " + location.getLatitude() + ", " + location.getLongitude());
+            if (location != null) {
+                currentLocation = location;
             }
 
             GingerbreadLastLocationFinder.this.locationManager
                     .removeUpdates(GingerbreadLastLocationFinder.this.singleUpatePI);
         }
     };
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setChangedLocationListener(LocationListener l) {
-        this.locationListener = l;
-    }
 
     /**
      * {@inheritDoc}
