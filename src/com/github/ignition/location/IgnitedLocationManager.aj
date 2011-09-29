@@ -64,15 +64,11 @@ public aspect IgnitedLocationManager {
 
     protected IgnitedLocationActivity locationAnnotation;
 
-    private static volatile Location currentLocation;
-
-    private static boolean refreshDataIfLocationChanges, enablePassiveLocationUpdates;
-
-    private static long locationUpdateInterval;
-
-    private static int locationUpdateDistanceDiff;
-
     protected IgnitedLocationListener bestInactiveLocationProviderListener;
+
+    private volatile Location currentLocation;
+    private long locationUpdateInterval;
+    private int locationUpdateDistanceDiff;
 
     /**
      * If the Location Provider we're using to receive location updates is disabled while the app is
