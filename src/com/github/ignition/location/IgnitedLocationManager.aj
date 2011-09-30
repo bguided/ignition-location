@@ -59,6 +59,7 @@ public aspect IgnitedLocationManager {
     protected LocationManager locationManager;
     protected IgnitedLocationListener bestInactiveLocationProviderListener;
 
+    private Context context;
     private volatile Location currentLocation;
     private long locationUpdateInterval;
     private int locationUpdateDistanceDiff;
@@ -81,11 +82,11 @@ public aspect IgnitedLocationManager {
         }
     };
 
-    after(IgnitedLocationActivity ignitedAnnotation) : execution(* Activity.onCreate(..)) && @this(ignitedAnnotation) 
-        && within(@IgnitedLocationActivity *) {
+    after(IgnitedLocationActivity ignitedAnnotation) : execution(* Activity.onCreate(..)) 
+        && @this(ignitedAnnotation) && within(@IgnitedLocationActivity *) {
 
         // Get a reference to the Activity Context
-        Context context = (Context) thisJoinPoint.getThis();
+        context = (Context) thisJoinPoint.getThis();
 
         // Get references to the managers
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -120,7 +121,9 @@ public aspect IgnitedLocationManager {
     before(IgnitedLocationActivity ignitedAnnotation) : execution(* Activity.onResume(..)) && @this(ignitedAnnotation)
         && within(@IgnitedLocationActivity *) {
 
-        final Context context = (Context) thisJoinPoint.getThis();
+        if (context == null) {
+            context = (Context) thisJoinPoint.getThis();
+        }
         final boolean refreshDataIfLocationChanges = ignitedAnnotation
                 .refreshDataIfLocationChanges();
 
@@ -128,10 +131,7 @@ public aspect IgnitedLocationManager {
 
         Log.d(LOG_TAG, "Retrieving last known location...");
         if (currentLocation != null) {
-            if (context instanceof OnIgnitedLocationChangedListener) {
-                ((OnIgnitedLocationChangedListener) context)
-                        .onIgnitedLocationChanged(currentLocation);
-            }
+            ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(currentLocation);
             // If we have requested location updates, turn them on here.
             if (refreshDataIfLocationChanges) {
                 requestLocationUpdates(context);
@@ -155,10 +155,7 @@ public aspect IgnitedLocationManager {
             protected void onPostExecute(Location lastKnownLocation) {
                 if (lastKnownLocation != null) {
                     currentLocation = lastKnownLocation;
-                    if (context instanceof OnIgnitedLocationChangedListener) {
-                        ((OnIgnitedLocationChangedListener) context)
-                                .onIgnitedLocationChanged(currentLocation);
-                    }
+                    ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(currentLocation);
                     Log.d(LOG_TAG, "Last known location from " + currentLocation.getProvider()
                             + " (lat, long): " + currentLocation.getLatitude() + ", "
                             + currentLocation.getLongitude());
@@ -206,25 +203,30 @@ public aspect IgnitedLocationManager {
 
     after(IgnitedLocationActivity ignitedAnnotation) : execution(* Activity.onPause(..)) && @this(ignitedAnnotation) 
         && within(@IgnitedLocationActivity *) && if (ignitedAnnotation.refreshDataIfLocationChanges()) {
-
-        disableLocationUpdates((Context) thisJoinPoint.getThis(), ignitedAnnotation.enablePassiveUpdates());
+        
+        boolean finishing = ((Activity) context).isFinishing();
+        disableLocationUpdates(context, ignitedAnnotation.enablePassiveUpdates(), finishing);
+        
+        if (finishing) {
+            context = null;
+        }
     }
 
-    // after() : execution(* Activity.onDestroy(..)) && @this(IgnitedLocationActivity) {
-    // }
+//     after() : execution(* Activity.onDestroy(..)) && @this(IgnitedLocationActivity) 
+//         && within(@IgnitedLocationActivity *) {
+//     }
 
     Location around() : get(@IgnitedLocation Location *) {
         return currentLocation;
     }
-
+    
     void around(Location freshLocation) : set(@IgnitedLocation Location *) && args(freshLocation) 
         && (within(com.github.ignition.location.receivers.*) || within(com.github.ignition.location.utils.*)) {
-
-        Context context = (Context) thisJoinPoint.getThis();
+        
         currentLocation = freshLocation;
         Log.d(LOG_TAG, "New location from " + currentLocation.getProvider() + " (lat, long): "
                 + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
-        if (context instanceof OnIgnitedLocationChangedListener) {
+        if (context != null) {
             ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(currentLocation);
         }
     }
@@ -262,14 +264,13 @@ public aspect IgnitedLocationManager {
      * 
      * @param enablePassiveLocationUpdates
      */
-    protected void disableLocationUpdates(Context context, boolean enablePassiveLocationUpdates) {
+    protected void disableLocationUpdates(Context context, boolean enablePassiveLocationUpdates, boolean finishing) {
         Log.d(LOG_TAG, "...disabling location updates");
         context.unregisterReceiver(locProviderDisabledReceiver);
         locationManager.removeUpdates(locationListenerPendingIntent);
         if (bestInactiveLocationProviderListener != null) {
             locationManager.removeUpdates(bestInactiveLocationProviderListener);
         }
-        boolean finishing = ((Activity) context).isFinishing();
 
         if (finishing) {
             lastLocationFinder.cancel();

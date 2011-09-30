@@ -147,6 +147,9 @@ public class IgnitedGingerbreadLastLocationFinder implements ILastLocationFinder
                     + " (lat, long): " + location.getLatitude() + ", " + location.getLongitude());
             if (location != null) {
                 currentLocation = location;
+                // if (context instanceof OnIgnitedLocationChangedListener) {
+                // ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(location);
+                // }
             }
 
             IgnitedGingerbreadLastLocationFinder.this.locationManager

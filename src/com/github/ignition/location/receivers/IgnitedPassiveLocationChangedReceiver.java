@@ -94,6 +94,9 @@ public class IgnitedPassiveLocationChangedReceiver extends BroadcastReceiver {
         if (location != null) {
             Log.d(LOG_TAG, "Passively updating location...");
             currentLocation = location;
+            // if (context instanceof OnIgnitedLocationChangedListener) {
+            // ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(location);
+            // }
         }
 
     }

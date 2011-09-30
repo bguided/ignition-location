@@ -47,6 +47,7 @@ public class IgnitedLegacyLastLocationFinder implements ILastLocationFinder {
 
     protected LocationManager locationManager;
     protected Criteria criteria;
+    protected Context context;
 
     /**
      * Construct a new Legacy Last Location Finder.
@@ -55,6 +56,7 @@ public class IgnitedLegacyLastLocationFinder implements ILastLocationFinder {
      *            Context
      */
     public IgnitedLegacyLastLocationFinder(Context appContext) {
+        this.context = appContext;
         this.locationManager = (LocationManager) appContext
                 .getSystemService(Context.LOCATION_SERVICE);
         this.criteria = new Criteria();

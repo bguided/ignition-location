@@ -43,6 +43,11 @@ public class PlatformSpecificImplementationFactory {
 		return IgnitedDiagnostics.SUPPORTS_GINGERBREAD ? new IgnitedGingerbreadLastLocationFinder(
 				context) : new IgnitedLegacyLastLocationFinder(context);
 	}
+    public static ILastLocationFinder getLastLocationFinder(Context context) {
+        Context appContext = context.getApplicationContext();
+        return IgnitedDiagnostics.SUPPORTS_GINGERBREAD ? new IgnitedGingerbreadLastLocationFinder(
+                appContext) : new IgnitedLegacyLastLocationFinder(appContext);
+    }
 
 	/**
 	 * Create a new LocationUpdateRequester
