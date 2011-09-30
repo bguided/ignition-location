@@ -136,9 +136,11 @@ public class IgnitedLegacyLastLocationFinder implements ILastLocationFinder {
                     + " (lat, long): " + location.getLatitude() + ", " + location.getLongitude());
             if (location != null) {
                 currentLocation = location;
+                // if (context instanceof OnIgnitedLocationChangedListener) {
+                // ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(location);
+                // }
             }
-            IgnitedLegacyLastLocationFinder.this.locationManager
-                    .removeUpdates(IgnitedLegacyLastLocationFinder.this.singeUpdateListener);
+            locationManager.removeUpdates(IgnitedLegacyLastLocationFinder.this.singeUpdateListener);
         }
 
         @Override
@@ -159,6 +161,6 @@ public class IgnitedLegacyLastLocationFinder implements ILastLocationFinder {
      */
     @Override
     public void cancel() {
-        this.locationManager.removeUpdates(this.singeUpdateListener);
+        locationManager.removeUpdates(this.singeUpdateListener);
     }
 }

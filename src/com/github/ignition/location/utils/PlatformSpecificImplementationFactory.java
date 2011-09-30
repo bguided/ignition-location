@@ -27,47 +27,42 @@ import com.github.ignition.location.templates.LocationUpdateRequester;
 import com.github.ignition.support.IgnitedDiagnostics;
 
 /**
- * Factory class to create the correct instances of a variety of classes with
- * platform specific implementations.
+ * Factory class to create the correct instances of a variety of classes with platform specific
+ * implementations.
  */
 public class PlatformSpecificImplementationFactory {
 
-	/**
-	 * Create a new LastLocationFinder instance
-	 * 
-	 * @param context
-	 *            Context
-	 * @return LastLocationFinder
-	 */
-	public static ILastLocationFinder getLastLocationFinder(Context context) {
-		return IgnitedDiagnostics.SUPPORTS_GINGERBREAD ? new IgnitedGingerbreadLastLocationFinder(
-				context) : new IgnitedLegacyLastLocationFinder(context);
-	}
+    /**
+     * Create a new LastLocationFinder instance
+     * 
+     * @param context
+     *            Context
+     * @return LastLocationFinder
+     */
     public static ILastLocationFinder getLastLocationFinder(Context context) {
         Context appContext = context.getApplicationContext();
         return IgnitedDiagnostics.SUPPORTS_GINGERBREAD ? new IgnitedGingerbreadLastLocationFinder(
                 appContext) : new IgnitedLegacyLastLocationFinder(appContext);
     }
 
-	/**
-	 * Create a new LocationUpdateRequester
-	 * 
-	 * @param locationManager
-	 *            Location Manager
-	 * @return LocationUpdateRequester
-	 */
-	public static LocationUpdateRequester getLocationUpdateRequester(
-			Context context) {
-		LocationManager locationManager = (LocationManager) context
-				.getSystemService(LOCATION_SERVICE);
-		if (IgnitedDiagnostics.SUPPORTS_GINGERBREAD) {
-			return new GingerbreadLocationUpdateRequester(locationManager);
-		} else if (IgnitedDiagnostics.SUPPORTS_FROYO) {
-			return new FroyoLocationUpdateRequester(locationManager);
-		} else {
-			AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-			return new LegacyLocationUpdateRequester(locationManager, alarmManager);
-		}
-	}
+    /**
+     * Create a new LocationUpdateRequester
+     * 
+     * @param locationManager
+     *            Location Manager
+     * @return LocationUpdateRequester
+     */
+    public static LocationUpdateRequester getLocationUpdateRequester(Context context) {
+        LocationManager locationManager = (LocationManager) context
+                .getSystemService(LOCATION_SERVICE);
+        if (IgnitedDiagnostics.SUPPORTS_GINGERBREAD) {
+            return new GingerbreadLocationUpdateRequester(locationManager);
+        } else if (IgnitedDiagnostics.SUPPORTS_FROYO) {
+            return new FroyoLocationUpdateRequester(locationManager);
+        } else {
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+            return new LegacyLocationUpdateRequester(locationManager, alarmManager);
+        }
+    }
 
 }
