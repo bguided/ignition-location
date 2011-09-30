@@ -26,13 +26,13 @@
         </activity>
 
 
-        <receiver android:name="com.github.ignition.location.receivers.LocationChangedReceiver" >
+        <receiver android:name="com.github.ignition.location.receivers.IgnitedLocationChangedReceiver" >
             <intent-filter >
                 <action android:name="com.github.ignition.location.ACTIVE_LOCATION_UPDATE_ACTION" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.github.ignition.location.receivers.PassiveLocationChangedReceiver" />
+            android:name="com.github.ignition.location.receivers.IgnitedPassiveLocationChangedReceiver" />
         <receiver
             android:name="com.github.ignition.location.receivers.ConnectivityChangedReceiver"
             enabled="false">
