@@ -181,8 +181,8 @@ public aspect IgnitedLocationManager {
         && within(@IgnitedLocationActivity *) && if (ignitedAnnotation.refreshDataIfLocationChanges()) {
         
         boolean finishing = ((Activity) context).isFinishing();
-        disableLocationUpdates(context, ignitedAnnotation.enablePassiveUpdates(), finishing);
-        
+        disableLocationUpdates(ignitedAnnotation.enablePassiveUpdates(), finishing);
+
         if (finishing) {
             context = null;
         }
@@ -249,7 +249,7 @@ public aspect IgnitedLocationManager {
      * 
      * @param enablePassiveLocationUpdates
      */
-    protected void disableLocationUpdates(Context context, boolean enablePassiveLocationUpdates, boolean finishing) {
+    protected void disableLocationUpdates(boolean enablePassiveLocationUpdates, boolean finishing) {
         Log.d(LOG_TAG, "...disabling location updates");
         locationUpdatesRequested = false;
 
