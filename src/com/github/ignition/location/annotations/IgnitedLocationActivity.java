@@ -28,16 +28,16 @@ public @interface IgnitedLocationActivity {
 
     boolean useGps() default IgnitedLocationConstants.USE_GPS;
 
-    boolean refreshDataIfLocationChanges() default IgnitedLocationConstants.REFRESH_DATA_ON_LOCATION_CHANGED;
+    boolean requestLocationUpdates() default IgnitedLocationConstants.REFRESH_DATA_ON_LOCATION_CHANGED;
 
-    int locationUpdateDistanceDiff() default IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF;
+    int locationUpdatesDistanceDiff() default IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF;
 
-    long locationUpdateInterval() default IgnitedLocationConstants.LOCATION_UPDATES_INTERVAL;
+    long locationUpdatesInterval() default IgnitedLocationConstants.LOCATION_UPDATES_INTERVAL;
 
-    int passiveLocationUpdateDistanceDiff() default IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF;
+    int passiveLocationUpdatesDistanceDiff() default IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF;
 
-    long passiveLocationUpdateInterval() default IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL;
+    long passiveLocationUpdatesInterval() default IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL;
 
-    boolean enablePassiveUpdates() default IgnitedLocationConstants.ENABLE_PASSIVE_LOCATION_WHEN_USER_EXITS;
+    boolean enablePassiveUpdates() default IgnitedLocationConstants.ENABLE_PASSIVE_LOCATION_UPDATES;
 
 }

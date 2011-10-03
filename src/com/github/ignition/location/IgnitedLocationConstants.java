@@ -35,7 +35,7 @@ public class IgnitedLocationConstants {
     public static final long PASSIVE_LOCATION_UPDATES_INTERVAL = LOCATION_UPDATES_INTERVAL * 3;
     // When the user exits via the back button, do you want to disable
     // passive background updates.
-    public static final boolean ENABLE_PASSIVE_LOCATION_WHEN_USER_EXITS = true;
+    public static final boolean ENABLE_PASSIVE_LOCATION_UPDATES = true;
 
     public static final String SHARED_PREFERENCE_FILE = "IgnitedLocationManagerPreference";
     public static final String SP_KEY_RUN_ONCE = "sp_key_run_once";
