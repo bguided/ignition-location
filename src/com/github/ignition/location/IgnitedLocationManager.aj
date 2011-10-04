@@ -207,10 +207,10 @@ public aspect IgnitedLocationManager {
                 + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
         if (context != null) {
             ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(currentLocation);
-        }
-        // If we have requested location updates, turn them on here.
-        if (refreshDataIfLocationChanges) {
-            requestLocationUpdates(context);
+            // If we have requested location updates, turn them on here.
+            if (refreshDataIfLocationChanges) {
+                requestLocationUpdates(context);
+            }
         }
     }
 
