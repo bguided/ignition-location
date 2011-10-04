@@ -83,11 +83,12 @@ public aspect IgnitedLocationManager {
         }
     };
 
-    after(IgnitedLocationActivity ignitedAnnotation) : execution(* Activity.onCreate(..)) 
+    after(Context context, IgnitedLocationActivity ignitedAnnotation) : 
+        execution(* Activity.onCreate(..)) && this(context)
         && @this(ignitedAnnotation) && within(@IgnitedLocationActivity *) {
 
-        // Get a reference to the Activity Context
-        context = (Context) thisJoinPoint.getThis();
+        // Get a reference to the Context
+        this.context = context;
 
         // Get references to the managers
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -115,11 +116,12 @@ public aspect IgnitedLocationManager {
                 .getLocationUpdateRequester(context);
     }
 
-    before(IgnitedLocationActivity ignitedAnnotation) : execution(* Activity.onResume(..)) && @this(ignitedAnnotation)
-        && within(@IgnitedLocationActivity *) {
-
-        if (context == null) {
-            context = (Context) thisJoinPoint.getThis();
+    before(Context context, IgnitedLocationActivity ignitedAnnotation) : 
+        execution(* Activity.onResume(..)) && this(context)
+        && @this(ignitedAnnotation) && within(@IgnitedLocationActivity *) {
+        // Get a reference to the Context if this context is null
+        if (this.context == null) {
+            this.context = context;
         }
         refreshDataIfLocationChanges = ignitedAnnotation.requestLocationUpdates();
 
