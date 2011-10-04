@@ -259,7 +259,7 @@ public aspect IgnitedLocationManager {
             locationManager.removeUpdates(bestInactiveLocationProviderListener);
         }
 
-        if (finishing) {
+        if (finishing && ignitedLastKnownLocationTask != null) {
             ignitedLastKnownLocationTask.cancel(true);
         }
         if (IgnitedDiagnostics.SUPPORTS_FROYO && enablePassiveLocationUpdates) {
