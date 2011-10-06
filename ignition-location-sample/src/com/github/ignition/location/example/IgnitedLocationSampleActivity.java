@@ -25,7 +25,7 @@ import com.github.ignition.location.annotations.IgnitedLocationActivity;
 
 // Use the @IgnitedLocationActivity annotation to take advantage if the ignition-location 
 // library functionalities.
-@IgnitedLocationActivity(useGps = true, refreshDataIfLocationChanges = true)
+@IgnitedLocationActivity(useGps = true, requestLocationUpdates = true)
 public class IgnitedLocationSampleActivity extends ListActivity {
 
     private ArrayAdapter<Location> adapter;
