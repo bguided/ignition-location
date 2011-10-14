@@ -87,6 +87,9 @@ public class IgnitedLegacyLastLocationFinder implements ILastLocationFinder {
         // note of the most accurate result within the acceptable time limit.
         // If no result is found within maxTime, return the newest Location.
         List<String> matchingProviders = this.locationManager.getAllProviders();
+        if (matchingProviders == null) {
+            return null;
+        }
         for (String provider : matchingProviders) {
             Location location = this.locationManager.getLastKnownLocation(provider);
             if (location != null) {

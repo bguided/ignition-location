@@ -40,38 +40,38 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        adapter = new ArrayAdapter<Location>(this,
-                android.R.layout.activity_list_item, android.R.id.text1);
+        adapter = new ArrayAdapter<Location>(this, android.R.layout.activity_list_item,
+                android.R.id.text1);
         setListAdapter(adapter);
 
-//        ((ToggleButton) findViewById(R.id.ign_loc_button))
-//                .setOnClickListener(new OnClickListener() {
-//
-//                    @Override
-//                    public void onClick(View v) {
-//                        Intent intent = new Intent(
-//                                IgnitedLocationSampleActivity.this,
-//                                IgnitedLocationSampleService.class);
-//                        if (((ToggleButton) v).isChecked()) {
-//                            startService(intent);
-//                        } else {
-//                            stopService(intent);
-//                        }
-//                    }
-//                });
+        // ((ToggleButton) findViewById(R.id.ign_loc_button))
+        // .setOnClickListener(new OnClickListener() {
+        //
+        // @Override
+        // public void onClick(View v) {
+        // Intent intent = new Intent(
+        // IgnitedLocationSampleActivity.this,
+        // IgnitedLocationSampleService.class);
+        // if (((ToggleButton) v).isChecked()) {
+        // startService(intent);
+        // } else {
+        // stopService(intent);
+        // }
+        // }
+        // });
     }
 
     // Make sure the onResume() method is overridden in your Activity or
     // the ignition-location library as expected
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
     }
 
- // Make sure the onPause() method is overridden in your Activity or
+    // Make sure the onPause() method is overridden in your Activity or
     // the ignition-location library as expected
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
     }
 
