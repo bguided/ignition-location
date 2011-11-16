@@ -68,7 +68,7 @@ public class IgnitedLastKnownLocationAsyncTask extends AsyncTask<Void, Void, Loc
     }
 
     @Override
-    protected void onCancelled(Location result) {
+    protected void onCancelled() {
         lastLocationFinder.cancel();
     }
 }
