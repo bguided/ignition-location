@@ -25,7 +25,7 @@ import com.github.ignition.location.annotations.IgnitedLocationActivity;
 
 // Use the @IgnitedLocationActivity annotation to take advantage if the ignition-location 
 // library functionalities.
-@IgnitedLocationActivity(useGps = true, requestLocationUpdates = true)
+@IgnitedLocationActivity
 public class IgnitedLocationSampleActivity extends ListActivity {
 
     private ArrayAdapter<Location> adapter;
@@ -39,40 +39,61 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.println("onCreate()");
         setContentView(R.layout.main);
-        adapter = new ArrayAdapter<Location>(this,
-                android.R.layout.activity_list_item, android.R.id.text1);
+        adapter = new ArrayAdapter<Location>(this, android.R.layout.activity_list_item,
+                android.R.id.text1);
         setListAdapter(adapter);
 
-//        ((ToggleButton) findViewById(R.id.ign_loc_button))
-//                .setOnClickListener(new OnClickListener() {
-//
-//                    @Override
-//                    public void onClick(View v) {
-//                        Intent intent = new Intent(
-//                                IgnitedLocationSampleActivity.this,
-//                                IgnitedLocationSampleService.class);
-//                        if (((ToggleButton) v).isChecked()) {
-//                            startService(intent);
-//                        } else {
-//                            stopService(intent);
-//                        }
-//                    }
-//                });
+        // ((ToggleButton) findViewById(R.id.ign_loc_button))
+        // .setOnClickListener(new OnClickListener() {
+        //
+        // @Override
+        // public void onClick(View v) {
+        // Intent intent = new Intent(
+        // IgnitedLocationSampleActivity.this,
+        // IgnitedLocationSampleService.class);
+        // if (((ToggleButton) v).isChecked()) {
+        // startService(intent);
+        // } else {
+        // stopService(intent);
+        // }
+        // }
+        // });
+    }
+    
+    @Override
+    public void onStart() {
+        super.onStart();
+        System.out.println("onStart()");
     }
 
     // Make sure the onResume() method is overridden in your Activity or
     // the ignition-location library as expected
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
+        System.out.println("onResume()");
     }
 
- // Make sure the onPause() method is overridden in your Activity or
+    // Make sure the onPause() method is overridden in your Activity or
     // the ignition-location library as expected
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
+        System.out.println("onPause()");
+    }
+    
+    @Override
+    public void onStop() {
+        super.onStop();
+        System.out.println("onStop()");
+    }
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        System.out.println("onDestroy()");
     }
 
     // This callback is called every time the Location Manager has got a new
@@ -85,5 +106,12 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     public void refreshData() {
         adapter.add(currentLocation);
     }
-
+    
+    public ArrayAdapter<Location> getAdapter() {
+        return adapter;
+    }
+    
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
 }

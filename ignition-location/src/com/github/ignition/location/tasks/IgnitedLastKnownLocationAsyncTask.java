@@ -9,10 +9,10 @@ import com.github.ignition.location.templates.ILastLocationFinder;
 import com.github.ignition.location.utils.PlatformSpecificImplementationFactory;
 
 public class IgnitedLastKnownLocationAsyncTask extends AsyncTask<Void, Void, Location> {
-    private Context context;
-    private ILastLocationFinder lastLocationFinder;
-    private int locationUpdateDistanceDiff;
-    private long locationUpdateInterval;
+    private final Context context;
+    private final ILastLocationFinder lastLocationFinder;
+    private final int locationUpdateDistanceDiff;
+    private final long locationUpdateInterval;
     @SuppressWarnings("unused")
     @IgnitedLocation
     private Location currentLocation;
