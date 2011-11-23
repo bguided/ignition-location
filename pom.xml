@@ -33,10 +33,9 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>com.google.android.maps</groupId>
-        <artifactId>maps</artifactId>
-        <version>${androidApiLevel}_${androidApiRevision}</version>
-        <scope>provided</scope>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjrt</artifactId>
+        <version>1.6.11</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
