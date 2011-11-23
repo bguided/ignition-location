@@ -14,27 +14,6 @@
   <name>Ignition Location Project</name>
   <url>http://github.com/stefanodacchille/ignition-location</url>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.google.android</groupId>
-      <artifactId>android</artifactId>
-      <version>2.3.3</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.android.maps</groupId>
-      <artifactId>maps</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjrt</artifactId>
-      <version>1.6.11</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.name}</groupId>
-      <artifactId>ignition-support</artifactId>
-    </dependency>
-  </dependencies>
-
   <modules>
     <module>ignition-location</module>
     <module>location-sample</module>
