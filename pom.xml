@@ -50,6 +50,17 @@
           <configuration>
             <source>${sourceCompatibility}</source>
           </configuration>
+          <executions>
+            <execution>
+              <!-- phase need to be before compile, or the build will 
+                fail. More info here: http://stackoverflow.com/questions/2610633/maven-compile-aspectj-project-containing-java-1-6-source -->
+              <phase>process-sources</phase>
+              <goals>
+                <goal>compile</goal>
+<!--                 <goal>test-compile</goal> -->
+              </goals>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
