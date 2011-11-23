@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.github.ignition.location.example;
+package com.github.ignition.samples;
 
 import android.app.ListActivity;
 import android.location.Location;
@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 
 import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.annotations.IgnitedLocationActivity;
+import com.github.ignition.location.example.R;
 
 // Use the @IgnitedLocationActivity annotation to take advantage if the ignition-location 
 // library functionalities.
@@ -61,7 +62,7 @@ public class IgnitedLocationSampleActivity extends ListActivity {
         // }
         // });
     }
-    
+
     @Override
     public void onStart() {
         super.onStart();
@@ -83,13 +84,13 @@ public class IgnitedLocationSampleActivity extends ListActivity {
         super.onPause();
         System.out.println("onPause()");
     }
-    
+
     @Override
     public void onStop() {
         super.onStop();
         System.out.println("onStop()");
     }
-    
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -106,11 +107,11 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     public void refreshData() {
         adapter.add(currentLocation);
     }
-    
+
     public ArrayAdapter<Location> getAdapter() {
         return adapter;
     }
-    
+
     public Location getCurrentLocation() {
         return currentLocation;
     }
