@@ -23,12 +23,6 @@
     </dependency>
     <dependency>
       <groupId>com.github.ignition</groupId>
-      <artifactId>ignition-location</artifactId>
-      <version>${project.version}</version>
-      <type>apklib</type>
-    </dependency>
-    <dependency>
-      <groupId>com.github.ignition</groupId>
       <artifactId>location-sample</artifactId>
       <version>${project.version}</version>
     </dependency>
