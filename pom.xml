@@ -17,6 +17,7 @@
   <modules>
     <module>ignition-location</module>
     <module>location-sample</module>
+    <module>location-tests</module>
   </modules>
 
   <properties>
@@ -41,6 +42,7 @@
   </dependencyManagement>
 
   <build>
+    <sourceDirectory>src</sourceDirectory>
     <pluginManagement>
       <plugins>
         <plugin>
