@@ -1,5 +1,6 @@
 package com.github.ignition.location.tests;
 
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -12,16 +13,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 
 import com.github.ignition.location.IgnitedLocationConstants;
 import com.github.ignition.samples.IgnitedLocationSampleActivity;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.shadows.ShadowActivity;
+import com.xtremelabs.robolectric.shadows.ShadowActivityManager;
 import com.xtremelabs.robolectric.shadows.ShadowApplication;
 import com.xtremelabs.robolectric.shadows.ShadowApplication.Wrapper;
 import com.xtremelabs.robolectric.shadows.ShadowLocationManager;
@@ -38,7 +42,7 @@ public class IgnitedLocationManagerTest {
         shadowApp = Robolectric.getShadowApplication();
         shadowLocationManager = Robolectric.shadowOf((LocationManager) activity
                 .getSystemService(Context.LOCATION_SERVICE));
-        Location lastKnownLocation = getLocation();
+        Location lastKnownLocation = getMockLocation();
         shadowLocationManager.setProviderEnabled(LocationManager.GPS_PROVIDER, true);
         shadowLocationManager.setProviderEnabled(LocationManager.NETWORK_PROVIDER, true);
         shadowLocationManager.setLastKnownLocation(LocationManager.GPS_PROVIDER, lastKnownLocation);
@@ -52,10 +56,11 @@ public class IgnitedLocationManagerTest {
         }
     }
 
-    private Location getLocation() {
+    private Location getMockLocation() {
         Location location = new Location(LocationManager.GPS_PROVIDER);
         location.setLatitude(1.0);
         location.setLongitude(1.0);
+        location.setAccuracy(1000);
         return location;
     }
 
@@ -74,7 +79,7 @@ public class IgnitedLocationManagerTest {
     public void ignitedLocationIsCurrentLocation() {
         resume();
 
-        assertThat(getLocation(), equalTo(activity.getCurrentLocation()));
+        assertThat(getMockLocation(), equalTo(activity.getCurrentLocation()));
         Location newLocation = sendMockLocationBroadcast(LocationManager.GPS_PROVIDER);
         assertThat(newLocation, equalTo(activity.getCurrentLocation()));
     }
@@ -109,11 +114,15 @@ public class IgnitedLocationManagerTest {
         resume();
     }
 
-    // @Test
-    // public void testNoTaskRunningOnFinish() {
-    // resume();
-    // finish();
-    // }
+    @Test
+    public void noTaskRunningOnFinish() {
+        // shadowApp.getBackgroundScheduler().pause();
+        ActivityManager activityManager = (ActivityManager) activity
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        ShadowActivityManager shadowActivityManager = Robolectric.shadowOf(activityManager);
+        resume();
+        assertThat(shadowActivityManager.getRunningTasks(0).size(), equalTo(1));
+    }
 
     @Test
     public void ignitedLocationSettingsAreSavedToPreferences() {
@@ -149,48 +158,46 @@ public class IgnitedLocationManagerTest {
                 equalTo(passiveLocUpdatesInterval));
     }
 
-    // @Test
-    // public void shouldRegisterListenerIfBestProviderDisabled() {
-    // shadowLocationManager.setBestDisabledProvider(LocationManager.GPS_PROVIDER);
-    // shadowLocationManager.setProviderEnabled(LocationManager.GPS_PROVIDER, false);
-    // shadowLocationManager.setBestEnabledProvider(LocationManager.NETWORK_PROVIDER);
-    //
-    // resume();
-    //
-    // List<LocationListener> listeners = shadowLocationManager
-    // .getRequestLocationUpdateListeners();
-    // assertThat(listeners.isEmpty(), equalTo(false));
-    // }
-    //
-    // @Test
-    // public void shouldNotRegisterListenerIfBestProviderEnabled() {
-    // shadowLocationManager.setBestEnabledProvider(LocationManager.GPS_PROVIDER);
-    // shadowLocationManager.setBestDisabledProvider(LocationManager.GPS_PROVIDER);
-    // shadowLocationManager.setProviderEnabled(LocationManager.GPS_PROVIDER, true);
-    //
-    // resume();
-    //
-    // List<LocationListener> listeners = shadowLocationManager
-    // .getRequestLocationUpdateListeners();
-    // assertNotNull(listeners);
-    // }
-    //
-    // @Test
-    // public void shouldRegisterLocationProviderDisabledReceiver() {
-    // resume();
-    //
-    // List<Wrapper> receivers = shadowApp.getRegisteredReceivers();
-    // assertNotNull(receivers);
-    // boolean receiverRegistered = false;
-    // for (Wrapper receiver : receivers) {
-    // if (receiver.intentFilter.getAction(0).equals(
-    // IgnitedLocationConstants.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED_ACTION)) {
-    // receiverRegistered = true;
-    // break;
-    // }
-    // }
-    // assertTrue(receiverRegistered);
-    // }
+    @Test
+    public void shouldRegisterListenerIfBestProviderDisabled() throws Exception {
+        shadowLocationManager.setProviderEnabled(LocationManager.GPS_PROVIDER, false);
+        shadowLocationManager.setBestProvider(LocationManager.NETWORK_PROVIDER, true);
+
+        resume();
+
+        List<LocationListener> listeners = shadowLocationManager
+                .getRequestLocationUpdateListeners();
+        assertFalse(listeners.isEmpty());
+    }
+
+    @Test
+    public void shouldNotRegisterListenerIfBestProviderEnabled() throws Exception {
+        shadowLocationManager.setBestProvider(LocationManager.GPS_PROVIDER, true);
+        shadowLocationManager.setBestProvider(LocationManager.GPS_PROVIDER, false);
+
+        resume();
+
+        List<LocationListener> listeners = shadowLocationManager
+                .getRequestLocationUpdateListeners();
+        assertTrue(listeners.isEmpty());
+    }
+
+    @Test
+    public void shouldRegisterLocationProviderDisabledReceiver() {
+        resume();
+
+        List<Wrapper> receivers = shadowApp.getRegisteredReceivers();
+        assertNotNull(receivers);
+        boolean receiverRegistered = false;
+        for (Wrapper receiver : receivers) {
+            if (receiver.intentFilter.getAction(0).equals(
+                    IgnitedLocationConstants.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED_ACTION)) {
+                receiverRegistered = true;
+                break;
+            }
+        }
+        assertTrue(receiverRegistered);
+    }
 
     // @Test
     // public void requestLocationUpdatesFromAnotherProviderIfCurrentOneIsDisabled() {
@@ -207,6 +214,7 @@ public class IgnitedLocationManagerTest {
         assertThat(countAfter, equalTo(++countBefore));
     }
 
+    // Helper methods
     private void finish() {
         activity.finish();
         activity.onPause();
