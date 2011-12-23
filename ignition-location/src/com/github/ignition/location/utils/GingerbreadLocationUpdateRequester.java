@@ -38,6 +38,7 @@ public class GingerbreadLocationUpdateRequester extends FroyoLocationUpdateReque
     @Override
     public void requestLocationUpdates(long minTime, long minDistance, Criteria criteria,
             PendingIntent pendingIntent) {
+        super.requestLocationUpdates(minTime, minDistance, criteria, pendingIntent);
         // Gingerbread supports a location update request that accepts criteria
         // directly.
         // Note that we aren't monitoring this provider to check if it becomes

@@ -49,6 +49,7 @@ public class LegacyLocationUpdateRequester extends LocationUpdateRequester {
     @Override
     public void requestLocationUpdates(long minTime, long minDistance, Criteria criteria,
             PendingIntent pendingIntent) {
+        super.requestLocationUpdates(minTime, minDistance, criteria, pendingIntent);
         // Prior to Gingerbread we needed to find the best provider manually.
         // Note that we aren't monitoring this provider to check if it becomes
         // disabled - this is handled by the calling Activity.

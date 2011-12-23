@@ -62,7 +62,7 @@ public aspect IgnitedLocationManager {
     private volatile Location currentLocation;
     private long locationUpdatesInterval;
     private int locationUpdatesDistanceDiff;
-    private boolean refreshDataIfLocationChanges, locationUpdatesRequested;
+    private boolean refreshDataIfLocationChanges;
     private AsyncTask<Void, Void, Location> ignitedLastKnownLocationTask;
 
     /**
@@ -159,6 +159,7 @@ public aspect IgnitedLocationManager {
                 .passiveLocationUpdatesDistanceDiff();
         long passiveLocationUpdateInterval = locationAnnotation.passiveLocationUpdatesInterval();
         boolean enablePassiveLocationUpdates = locationAnnotation.enablePassiveUpdates();
+        boolean useGps = locationAnnotation.useGps();
 
         // Set pref file
         SharedPreferences prefs = context.getSharedPreferences(
@@ -166,6 +167,7 @@ public aspect IgnitedLocationManager {
         Editor editor = prefs.edit();
         editor.putBoolean(IgnitedLocationConstants.SP_KEY_FOLLOW_LOCATION_CHANGES,
                 enablePassiveLocationUpdates);
+        editor.putBoolean(IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_USE_GPS, useGps);
         editor.putInt(IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_DISTANCE_DIFF,
                 locationUpdatesDistanceDiff);
         editor.putLong(IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_INTERVAL,
@@ -179,25 +181,26 @@ public aspect IgnitedLocationManager {
 
     }
 
-    after(IgnitedLocationActivity ignitedAnnotation) : execution(* Activity.onPause(..)) && @this(ignitedAnnotation) 
+    after(Activity activity, IgnitedLocationActivity ignitedAnnotation) : execution(* Activity.onPause(..)) 
+        && @this(ignitedAnnotation) && this(activity)
         && within(@IgnitedLocationActivity *) && if (ignitedAnnotation.requestLocationUpdates()) {
-        
-        boolean finishing = ((Activity) context).isFinishing();
-        disableLocationUpdates(ignitedAnnotation.enablePassiveUpdates(), finishing);
+
+        boolean finishing = activity.isFinishing();
+        disableLocationUpdates(context, ignitedAnnotation.enablePassiveUpdates(), finishing);
 
         if (finishing) {
             context = null;
         }
     }
 
-//     after() : execution(* Activity.onDestroy(..)) && @this(IgnitedLocationActivity) 
-//         && within(@IgnitedLocationActivity *) {
-//     }
+    // after() : execution(* Activity.onDestroy(..)) && @this(IgnitedLocationActivity)
+    // && within(@IgnitedLocationActivity *) {
+    // }
 
     Location around() : get(@IgnitedLocation Location *) {
         return currentLocation;
     }
-    
+
     void around(Location freshLocation) : set(@IgnitedLocation Location *) && args(freshLocation) 
         && (within(com.github.ignition.location.receivers.*) || within(com.github.ignition.location.utils.*)
                 || within(IgnitedLastKnownLocationAsyncTask)) && !adviceexecution() {
@@ -214,15 +217,17 @@ public aspect IgnitedLocationManager {
         }
     }
 
+    public void requestLocationUpdatesWithNewCriteria(Context context, Criteria criteria) {
+        locationUpdateRequester.removeLocationUpdates();
+        this.criteria = criteria;
+        requestLocationUpdates(context);
+    }
+
     /**
      * Start listening for location updates.
      */
     protected void requestLocationUpdates(Context context) {
-        if (locationUpdatesRequested) {
-            return;
-        }
         Log.d(LOG_TAG, "requesting location updates...");
-        locationUpdatesRequested = true;
         // Normal updates while activity is visible.
         locationUpdateRequester.requestLocationUpdates(locationUpdatesInterval,
                 locationUpdatesDistanceDiff, criteria, locationListenerPendingIntent);
@@ -251,12 +256,12 @@ public aspect IgnitedLocationManager {
      * 
      * @param enablePassiveLocationUpdates
      */
-    protected void disableLocationUpdates(boolean enablePassiveLocationUpdates, boolean finishing) {
+    protected void disableLocationUpdates(Context context, boolean enablePassiveLocationUpdates,
+            boolean finishing) {
         Log.d(LOG_TAG, "...disabling location updates");
-        locationUpdatesRequested = false;
 
         context.unregisterReceiver(locProviderDisabledReceiver);
-        locationManager.removeUpdates(locationListenerPendingIntent);
+        locationUpdateRequester.removeLocationUpdates();
         if (bestInactiveLocationProviderListener != null) {
             locationManager.removeUpdates(bestInactiveLocationProviderListener);
         }
@@ -270,7 +275,6 @@ public aspect IgnitedLocationManager {
             locationUpdateRequester.requestPassiveLocationUpdates(locationUpdatesInterval,
                     locationUpdatesDistanceDiff, locationListenerPassivePendingIntent);
         }
-
     }
 
     /**

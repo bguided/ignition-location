@@ -16,11 +16,17 @@
 
 package com.github.ignition.location.receivers;
 
+import static com.github.ignition.location.IgnitedLocationConstants.SHARED_PREFERENCE_FILE;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
+
+import com.github.ignition.location.IgnitedLocationConstants;
+import com.github.ignition.location.IgnitedLocationManager;
 
 /**
  * The manifest Receiver is used to detect changes in battery state. When the system broadcasts a
@@ -46,5 +52,22 @@ public class PowerStateChangedReceiver extends BroadcastReceiver {
                 batteryLow ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED
                         : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
                 PackageManager.DONT_KILL_APP);
+
+        SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCE_FILE,
+                Context.MODE_PRIVATE);
+
+        if (prefs.getBoolean(IgnitedLocationConstants.SP_KEY_FOLLOW_LOCATION_CHANGES, true)
+                && prefs.getBoolean(IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_USE_GPS, true)) {
+
+            Criteria criteria = new Criteria();
+            if (batteryLow) {
+                criteria.setPowerRequirement(Criteria.POWER_LOW);
+            } else {
+                criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            }
+
+            IgnitedLocationManager ilm = IgnitedLocationManager.aspectOf();
+            ilm.requestLocationUpdatesWithNewCriteria(context, criteria);
+        }
     }
 }
