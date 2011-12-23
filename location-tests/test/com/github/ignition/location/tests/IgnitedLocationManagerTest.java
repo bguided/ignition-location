@@ -7,22 +7,25 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import android.app.ActivityManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 
 import com.github.ignition.location.IgnitedLocationConstants;
 import com.github.ignition.samples.IgnitedLocationSampleActivity;
+import com.github.ignition.support.IgnitedDiagnostics;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.shadows.ShadowActivity;
 import com.xtremelabs.robolectric.shadows.ShadowApplication;
@@ -38,6 +41,7 @@ public class IgnitedLocationManagerTest {
     @Before
     public void setUp() throws Exception {
         activity = new IgnitedLocationSampleActivity();
+
         shadowApp = Robolectric.getShadowApplication();
         shadowLocationManager = Robolectric.shadowOf((LocationManager) activity
                 .getSystemService(Context.LOCATION_SERVICE));
@@ -45,6 +49,10 @@ public class IgnitedLocationManagerTest {
         shadowLocationManager.setProviderEnabled(LocationManager.GPS_PROVIDER, true);
         shadowLocationManager.setProviderEnabled(LocationManager.NETWORK_PROVIDER, true);
         shadowLocationManager.setLastKnownLocation(LocationManager.GPS_PROVIDER, lastKnownLocation);
+
+        IgnitedDiagnostics.setTest(true);
+        IgnitedDiagnostics.setTestApiLevel(IgnitedDiagnostics.GINGERBREAD);
+
         activity.onCreate(null);
     }
 
@@ -198,6 +206,54 @@ public class IgnitedLocationManagerTest {
         assertThat(receiverRegistered, is(true));
     }
 
+    @Test
+    public void shouldNotRequestUpdatesFromGpsIfBatteryLowLegacy() {
+        IgnitedDiagnostics.setTestApiLevel(IgnitedDiagnostics.DONUT);
+
+        resume();
+
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_BATTERY_LOW);
+        shadowApp.sendBroadcast(intent);
+
+        Map<PendingIntent, String> locationPendingIntents = shadowLocationManager
+                .getRequestLocationUdpateProviderPendingIntents();
+
+        assertThat("Updates from " + LocationManager.GPS_PROVIDER
+                + " provider shouldn't be requested when battery power is low!",
+                !locationPendingIntents.containsValue(LocationManager.GPS_PROVIDER));
+
+        intent.setAction(Intent.ACTION_BATTERY_OKAY);
+        shadowApp.sendBroadcast(intent);
+
+        assertThat("Updates from " + LocationManager.GPS_PROVIDER
+                + " provider should be requested when battery power is okay!",
+                locationPendingIntents.containsValue(LocationManager.GPS_PROVIDER));
+    }
+
+    @Test
+    public void shouldNotRequestUpdatesFromGpsIfBatteryLowGingerbread() {
+        resume();
+
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_BATTERY_LOW);
+        shadowApp.sendBroadcast(intent);
+
+        Map<PendingIntent, Criteria> locationPendingIntents = shadowLocationManager
+                .getRequestLocationUdpateCriteriaPendingIntents();
+
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        assertThat("Updates from " + LocationManager.GPS_PROVIDER
+                + " provider shouldn't be requested when battery power is low!",
+                !locationPendingIntents.containsValue(criteria));
+
+        intent.setAction(Intent.ACTION_BATTERY_OKAY);
+        shadowApp.sendBroadcast(intent);
+
+        assertThat("Updates from " + LocationManager.GPS_PROVIDER
+                + " provider should be requested when battery power is okay!",
+                locationPendingIntents.containsValue(criteria));
     }
 
     // @Test
