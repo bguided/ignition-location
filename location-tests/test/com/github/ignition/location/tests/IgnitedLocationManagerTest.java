@@ -1,10 +1,10 @@
 package com.github.ignition.location.tests;
 
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNull.notNullValue;
 
 import java.util.List;
 
@@ -89,7 +89,7 @@ public class IgnitedLocationManagerTest {
         resume();
 
         List<Wrapper> receivers = shadowApp.getRegisteredReceivers();
-        assertNotNull(receivers);
+        assertThat(receivers, notNullValue());
         boolean receiverRegistered = false;
         for (Wrapper receiver : receivers) {
             if (receiver.intentFilter.getAction(0).equals(
@@ -98,7 +98,7 @@ public class IgnitedLocationManagerTest {
                 break;
             }
         }
-        assertTrue(receiverRegistered);
+        assertThat(receiverRegistered, is(true));
     }
 
     // TODO: find a better way to test this. Now the activity must be resumed twice or an Exception
@@ -146,8 +146,8 @@ public class IgnitedLocationManagerTest {
                 IgnitedLocationConstants.SP_KEY_PASSIVE_LOCATION_UPDATES_INTERVAL,
                 IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL);
 
-        assertTrue(followLocationChanges);
-        assertTrue(runOnce);
+        assertThat(followLocationChanges, is(true));
+        assertThat(runOnce, is(true));
 
         assertThat(IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF,
                 equalTo(locUpdatesDistDiff));
@@ -167,7 +167,7 @@ public class IgnitedLocationManagerTest {
 
         List<LocationListener> listeners = shadowLocationManager
                 .getRequestLocationUpdateListeners();
-        assertFalse(listeners.isEmpty());
+        assertThat(listeners.isEmpty(), is(false));
     }
 
     @Test
@@ -179,7 +179,7 @@ public class IgnitedLocationManagerTest {
 
         List<LocationListener> listeners = shadowLocationManager
                 .getRequestLocationUpdateListeners();
-        assertTrue(listeners.isEmpty());
+        assertThat("No listeners registered, the best provider is enabled!", listeners.isEmpty());
     }
 
     @Test
@@ -196,7 +196,9 @@ public class IgnitedLocationManagerTest {
                 break;
             }
         }
-        assertTrue(receiverRegistered);
+        assertThat(receiverRegistered, is(true));
+    }
+
     }
 
     // @Test
