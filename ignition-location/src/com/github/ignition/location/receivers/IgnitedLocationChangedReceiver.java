@@ -59,9 +59,6 @@ public class IgnitedLocationChangedReceiver extends BroadcastReceiver {
             Log.d(LOG_TAG, "Actively updating location...");
             Location location = (Location) intent.getExtras().get(key);
             currentLocation = location;
-            // if (context instanceof OnIgnitedLocationChangedListener) {
-            // ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(location);
-            // }
         }
     }
 }
