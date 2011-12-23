@@ -31,8 +31,8 @@
 <!--         <receiver -->
 <!--             android:name="com.github.ignition.location.receivers.PowerStateChangedReceiver"> -->
 <!--             <intent-filter> -->
-<!--                 <action android:name="android.intent.action.ACTION_BATTERY_LOW" /> -->
-<!--                 <action android:name="android.intent.action.ACTION_BATTERY_OKAY" /> -->
+<!--                 <action android:name="android.intent.action.BATTERY_LOW" /> -->
+<!--                 <action android:name="android.intent.action.BATTERY_OKAY" /> -->
 <!--             </intent-filter> -->
 <!--         </receiver> -->
 <!--         <receiver android:name="com.github.ignition.location.receivers.BootReceiver"> -->
