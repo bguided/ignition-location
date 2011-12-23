@@ -18,6 +18,8 @@ package com.github.ignition.location.utils;
 
 import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.LOCATION_SERVICE;
+import static com.github.ignition.support.IgnitedDiagnostics.FROYO;
+import static com.github.ignition.support.IgnitedDiagnostics.GINGERBREAD;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.location.LocationManager;
@@ -41,7 +43,7 @@ public class PlatformSpecificImplementationFactory {
      */
     public static ILastLocationFinder getLastLocationFinder(Context context) {
         Context appContext = context.getApplicationContext();
-        return IgnitedDiagnostics.SUPPORTS_GINGERBREAD ? new IgnitedGingerbreadLastLocationFinder(
+        return IgnitedDiagnostics.supportsApiLevel(GINGERBREAD) ? new IgnitedGingerbreadLastLocationFinder(
                 appContext) : new IgnitedLegacyLastLocationFinder(appContext);
     }
 
@@ -55,9 +57,9 @@ public class PlatformSpecificImplementationFactory {
     public static LocationUpdateRequester getLocationUpdateRequester(Context context) {
         LocationManager locationManager = (LocationManager) context
                 .getSystemService(LOCATION_SERVICE);
-        if (IgnitedDiagnostics.SUPPORTS_GINGERBREAD) {
+        if (IgnitedDiagnostics.supportsApiLevel(GINGERBREAD)) {
             return new GingerbreadLocationUpdateRequester(locationManager);
-        } else if (IgnitedDiagnostics.SUPPORTS_FROYO) {
+        } else if (IgnitedDiagnostics.supportsApiLevel(FROYO)) {
             return new FroyoLocationUpdateRequester(locationManager);
         } else {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
