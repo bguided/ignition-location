@@ -25,7 +25,6 @@ import com.github.ignition.location.IgnitedLocationConstants;
 import com.github.ignition.samples.IgnitedLocationSampleActivity;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.shadows.ShadowActivity;
-import com.xtremelabs.robolectric.shadows.ShadowActivityManager;
 import com.xtremelabs.robolectric.shadows.ShadowApplication;
 import com.xtremelabs.robolectric.shadows.ShadowApplication.Wrapper;
 import com.xtremelabs.robolectric.shadows.ShadowLocationManager;
@@ -114,15 +113,15 @@ public class IgnitedLocationManagerTest {
         resume();
     }
 
-    @Test
-    public void noTaskRunningOnFinish() {
-        // shadowApp.getBackgroundScheduler().pause();
-        ActivityManager activityManager = (ActivityManager) activity
-                .getSystemService(Context.ACTIVITY_SERVICE);
-        ShadowActivityManager shadowActivityManager = Robolectric.shadowOf(activityManager);
-        resume();
-        assertThat(shadowActivityManager.getRunningTasks(0).size(), equalTo(1));
-    }
+    // @Test
+    // public void noTaskRunningOnFinish() {
+    // // shadowApp.getBackgroundScheduler().pause();
+    // ActivityManager activityManager = (ActivityManager) activity
+    // .getSystemService(Context.ACTIVITY_SERVICE);
+    // ShadowActivityManager shadowActivityManager = Robolectric.shadowOf(activityManager);
+    // resume();
+    // assertThat(shadowActivityManager.getRunningTasks(0).size(), equalTo(1));
+    // }
 
     @Test
     public void ignitedLocationSettingsAreSavedToPreferences() {
