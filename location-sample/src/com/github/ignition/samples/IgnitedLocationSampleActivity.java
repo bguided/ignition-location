@@ -40,7 +40,6 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("onCreate()");
         setContentView(R.layout.main);
         adapter = new ArrayAdapter<Location>(this, android.R.layout.activity_list_item,
                 android.R.id.text1);
@@ -66,7 +65,6 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     @Override
     public void onStart() {
         super.onStart();
-        System.out.println("onStart()");
     }
 
     // Make sure the onResume() method is overridden in your Activity or
@@ -74,7 +72,6 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     @Override
     public void onResume() {
         super.onResume();
-        System.out.println("onResume()");
     }
 
     // Make sure the onPause() method is overridden in your Activity or
@@ -82,19 +79,16 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     @Override
     public void onPause() {
         super.onPause();
-        System.out.println("onPause()");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        System.out.println("onStop()");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        System.out.println("onDestroy()");
     }
 
     // This callback is called every time the Location Manager has got a new
