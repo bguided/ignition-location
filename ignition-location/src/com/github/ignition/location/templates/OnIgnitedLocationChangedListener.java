@@ -19,6 +19,6 @@ import android.location.Location;
 
 public interface OnIgnitedLocationChangedListener {
 
-	void onIgnitedLocationChanged(Location newLocation);
+    void onIgnitedLocationChanged(Location newLocation);
 
 }
