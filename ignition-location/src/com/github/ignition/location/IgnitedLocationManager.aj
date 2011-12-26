@@ -129,12 +129,15 @@ public aspect IgnitedLocationManager {
 
         Log.d(LOG_TAG, "Retrieving last known location...");
         if (currentLocation != null) {
-            ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(currentLocation);
+            boolean keepRequestingLocationUpdates = ((OnIgnitedLocationChangedListener) context)
+                    .onIgnitedLocationChanged(currentLocation);
             Log.d(LOG_TAG,
                     "Last known location from " + currentLocation.getProvider() + " (lat, long): "
                             + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
-            // If we have requested location updates, turn them on here.
-            if (refreshDataIfLocationChanges) {
+            if (!keepRequestingLocationUpdates) {
+                disableLocationUpdates(context, false);
+            } else if (refreshDataIfLocationChanges) {
+                // If we have requested location updates, turn them on here.
                 requestLocationUpdates(context);
             }
             return;
@@ -209,9 +212,18 @@ public aspect IgnitedLocationManager {
         Log.d(LOG_TAG, "New location from " + currentLocation.getProvider() + " (lat, long): "
                 + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
         if (context != null) {
-            ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(currentLocation);
-            // If we have requested location updates, turn them on here.
-            if (refreshDataIfLocationChanges) {
+            boolean keepRequestingLocationUpdates = ((OnIgnitedLocationChangedListener) context)
+                    .onIgnitedLocationChanged(currentLocation);
+            // If gps is enabled location comes from gps, remove runnable that removes gps updates
+            if (criteria.getAccuracy() == Criteria.ACCURACY_FINE
+                    && currentLocation.getProvider().equals(LocationManager.GPS_PROVIDER)) {
+                handler.removeCallbacks(removeGpsUpdates);
+            }
+
+            if (!keepRequestingLocationUpdates) {
+                disableLocationUpdates(context, false);
+            } else if (refreshDataIfLocationChanges) {
+                // If we have requested location updates, turn them on here.
                 requestLocationUpdates(context);
             }
         }

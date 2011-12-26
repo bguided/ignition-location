@@ -19,6 +19,14 @@ import android.location.Location;
 
 public interface OnIgnitedLocationChangedListener {
 
-    void onIgnitedLocationChanged(Location newLocation);
+    /**
+     * Returns true if more location updates should be requested, false otherwise (this will disable
+     * location updates requests).
+     * 
+     * @param newLocation
+     *            a brand new location
+     * @return true to request more location updates, false to stop location updates.
+     */
+    boolean onIgnitedLocationChanged(Location newLocation);
 
 }

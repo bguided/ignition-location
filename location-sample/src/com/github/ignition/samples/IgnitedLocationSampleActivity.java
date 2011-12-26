@@ -94,8 +94,9 @@ public class IgnitedLocationSampleActivity extends ListActivity {
     // This callback is called every time the Location Manager has got a new
     // location. Use it to update you geo-sensible data.
     @Override
-    public void onIgnitedLocationChanged(Location newLocation) {
+    public boolean onIgnitedLocationChanged(Location newLocation) {
         refreshData();
+        return newLocation.getAccuracy() > 25;
     }
 
     public void refreshData() {
