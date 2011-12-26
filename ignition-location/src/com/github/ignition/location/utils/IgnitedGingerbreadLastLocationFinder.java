@@ -143,9 +143,11 @@ public class IgnitedGingerbreadLastLocationFinder implements ILastLocationFinder
             String key = LocationManager.KEY_LOCATION_CHANGED;
             Location location = (Location) intent.getExtras().get(key);
 
-            Log.d(LOG_TAG, "...just got a brand new location from " + location.getProvider()
-                    + " (lat, long): " + location.getLatitude() + ", " + location.getLongitude());
             if (location != null) {
+                Log.d(LOG_TAG,
+                        "...just got a brand new location from " + location.getProvider()
+                                + " (lat, long): " + location.getLatitude() + ", "
+                                + location.getLongitude());
                 currentLocation = location;
                 // if (context instanceof OnIgnitedLocationChangedListener) {
                 // ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(location);

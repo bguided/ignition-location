@@ -132,9 +132,11 @@ public class IgnitedLegacyLastLocationFinder implements ILastLocationFinder {
     protected LocationListener singeUpdateListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            Log.d(LOG_TAG, "Single Location Update Received from " + location.getProvider()
-                    + " (lat, long): " + location.getLatitude() + ", " + location.getLongitude());
             if (location != null) {
+                Log.d(LOG_TAG,
+                        "Single Location Update Received from " + location.getProvider()
+                                + " (lat, long): " + location.getLatitude() + ", "
+                                + location.getLongitude());
                 currentLocation = location;
                 // if (context instanceof OnIgnitedLocationChangedListener) {
                 // ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(location);
