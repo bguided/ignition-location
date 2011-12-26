@@ -50,6 +50,7 @@ public class IgnitedLocationConstants {
     // "com.github.ignition.location.passive_location_update_action";
     public static final String ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED_ACTION = "com.github.ignition.location.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED_ACTION";
     public static final String ACTIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.ACTIVE_LOCATION_UPDATE_ACTION";
+    public static final String UPDATE_LOCATION_UPDATES_CRITERIA_ACTION = "com.github.ignition.location.UPDATE_LOCATION_UPDATES_CRITERIA_ACTION";
 
     public static final String IGNITED_LOCATION_PROVIDER = "ignited_location_provider";
 }
