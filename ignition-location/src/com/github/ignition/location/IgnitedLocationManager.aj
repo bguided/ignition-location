@@ -35,12 +35,15 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.annotations.IgnitedLocationActivity;
+import com.github.ignition.location.receivers.IgnitedLocationChangedReceiver;
 import com.github.ignition.location.receivers.IgnitedPassiveLocationChangedReceiver;
 import com.github.ignition.location.tasks.IgnitedLastKnownLocationAsyncTask;
+import com.github.ignition.location.templates.ILastLocationFinder;
 import com.github.ignition.location.templates.LocationUpdateRequester;
 import com.github.ignition.location.templates.OnIgnitedLocationChangedListener;
 import com.github.ignition.location.utils.PlatformSpecificImplementationFactory;
@@ -74,7 +77,7 @@ public aspect IgnitedLocationManager {
         @Override
         public void run() {
             Log.d(LOG_TAG,
-                    "It looks like GPS isn't working properly (maybe you're somewhere inside?). Removing location updates from GPS.");
+                    "It looks like GPS isn't working properly (maybe you're indoors or...?). Removing location updates from GPS.");
 
             Criteria criteria = new Criteria();
             criteria.setPowerRequirement(Criteria.POWER_LOW);
@@ -113,6 +116,8 @@ public aspect IgnitedLocationManager {
                 Context.MODE_PRIVATE);
         // Get references to the managers
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        handler = new Handler();
+
         criteria = buildCriteria();
 
         // Setup the location update Pending Intents
@@ -221,6 +226,8 @@ public aspect IgnitedLocationManager {
         boolean finishing = activity.isFinishing();
         disableLocationUpdates(context, finishing);
 
+        handler.removeCallbacks(removeGpsUpdates);
+
         if (finishing) {
             context = null;
         }
@@ -244,12 +251,6 @@ public aspect IgnitedLocationManager {
         if (context != null) {
             boolean keepRequestingLocationUpdates = ((OnIgnitedLocationChangedListener) context)
                     .onIgnitedLocationChanged(currentLocation);
-            // If gps is enabled location comes from gps, remove runnable that removes gps updates
-            if (criteria.getAccuracy() == Criteria.ACCURACY_FINE
-                    && currentLocation.getProvider().equals(LocationManager.GPS_PROVIDER)) {
-                handler.removeCallbacks(removeGpsUpdates);
-            }
-
             if (!keepRequestingLocationUpdates && !locationUpdatesDisabled) {
                 locationUpdateRequester.removeLocationUpdates();
             } else if (refreshDataIfLocationChanges
@@ -260,6 +261,13 @@ public aspect IgnitedLocationManager {
                 requestLocationUpdates(context);
             }
         }
+
+        // If gps is enabled location comes from gps, remove runnable that removes gps updates
+        if (criteria.getAccuracy() == Criteria.ACCURACY_FINE
+                && currentLocation.getProvider().equals(LocationManager.GPS_PROVIDER)) {
+            handler.removeCallbacks(removeGpsUpdates);
+        }
+    }
 
     protected void requestLocationUpdates(Context context) {
         requestLocationUpdates(context, criteria);
@@ -288,6 +296,11 @@ public aspect IgnitedLocationManager {
             bestInactiveLocationProviderListener = new IgnitedLocationListener(context);
             locationManager.requestLocationUpdates(bestProvider, 0, 0,
                     bestInactiveLocationProviderListener, context.getMainLooper());
+        } else {
+            // Post a runnable that will remove gps updates if no gps location is returned after 1
+            // minute in order to avoid draining the battery.
+            handler.postDelayed(removeGpsUpdates,
+                    IgnitedLocationConstants.WAIT_FOR_GPS_FIX_INTERVAL);
         }
 
         locationManager.removeUpdates(locationListenerPassivePendingIntent);
