@@ -31,17 +31,13 @@
                 <action android:name="com.github.ignition.location.ACTIVE_LOCATION_UPDATE_ACTION" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name="com.github.ignition.location.receivers.IgnitedPassiveLocationChangedReceiver" />
-        <receiver
-            android:name="com.github.ignition.location.receivers.ConnectivityChangedReceiver"
-            enabled="false">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="com.github.ignition.location.receivers.PowerStateChangedReceiver">
+        <receiver android:name="com.github.ignition.location.receivers.IgnitedPassiveLocationChangedReceiver" />
+<!--         <receiver android:name="com.github.ignition.location.receivers.ConnectivityChangedReceiver" enabled="false" > -->
+<!--             <intent-filter> -->
+<!--                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" /> -->
+<!--             </intent-filter> -->
+<!--         </receiver> -->
+        <receiver android:name="com.github.ignition.location.receivers.PowerStateChangedReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BATTERY_LOW" />
                 <action android:name="android.intent.action.BATTERY_OKAY" />
