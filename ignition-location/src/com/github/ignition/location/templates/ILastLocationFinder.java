@@ -32,6 +32,7 @@ import android.location.LocationListener;
  */
 public interface ILastLocationFinder {
     static final String LOG_TAG = "IgnitedLastLocationFinder";
+    static final String LAST_LOCATION_TOO_OLD_EXTRA = "last_location_too_old_extra";
 
     /**
      * Find the most accurate and timely previously detected location using all the location

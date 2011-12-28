@@ -113,12 +113,14 @@ public class IgnitedLegacyLastLocationFinder implements ILastLocationFinder {
         // [minDistance].
         // Prior to Gingerbread "one-shot" updates weren't available, so we need
         // to implement this manually.
-        if (((bestTime > minTime) || (bestAccuracy > minDistance))) {
+        if ((bestTime > minTime) || (bestAccuracy > minDistance)) {
             String provider = this.locationManager.getBestProvider(this.criteria, true);
             if (provider != null) {
                 this.locationManager.requestLocationUpdates(provider, 0, 0,
                         this.singeUpdateListener, context.getMainLooper());
             }
+
+            bestResult.getExtras().putBoolean(LAST_LOCATION_TOO_OLD_EXTRA, true);
         }
 
         return bestResult;
