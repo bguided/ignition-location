@@ -59,10 +59,29 @@ public aspect IgnitedLocationManager {
 
     private Context context;
     private volatile Location currentLocation;
-    private long locationUpdatesInterval;
-    private int locationUpdatesDistanceDiff;
+    private long locationUpdatesInterval, passiveLocationUpdatesInterval;
+    private int locationUpdatesDistanceDiff, passiveLocationUpdatesDistanceDiff;
     private boolean refreshDataIfLocationChanges;
+    private boolean locationUpdatesDisabled = true;
+
     private AsyncTask<Void, Void, Location> ignitedLastKnownLocationTask;
+    private SharedPreferences prefs;
+    private Handler handler;
+
+    // Switch to another provider if gps doesn't return a location quickly enough.
+    private Runnable removeGpsUpdates = new Runnable() {
+        @Override
+        public void run() {
+            Log.d(LOG_TAG,
+                    "It looks like GPS isn't working properly (maybe you're somewhere inside?). Removing location updates from GPS.");
+
+            Criteria criteria = new Criteria();
+            criteria.setPowerRequirement(Criteria.POWER_LOW);
+            criteria.setAccuracy(Criteria.NO_REQUIREMENT);
+
+            requestLocationUpdates(context, criteria);
+        }
+    };
 
     /**
      * If the Location Provider we're using to receive location updates is disabled while the app is
@@ -182,9 +201,9 @@ public aspect IgnitedLocationManager {
     private void saveToPreferences(Context context, IgnitedLocationActivity locationAnnotation) {
         locationUpdatesDistanceDiff = locationAnnotation.locationUpdatesDistanceDiff();
         locationUpdatesInterval = locationAnnotation.locationUpdatesInterval();
-        int passiveLocationUpdateDistanceDiff = locationAnnotation
+        passiveLocationUpdatesDistanceDiff = locationAnnotation
                 .passiveLocationUpdatesDistanceDiff();
-        long passiveLocationUpdateInterval = locationAnnotation.passiveLocationUpdatesInterval();
+        passiveLocationUpdatesInterval = locationAnnotation.passiveLocationUpdatesInterval();
         boolean enablePassiveLocationUpdates = locationAnnotation.enablePassiveUpdates();
         boolean useGps = locationAnnotation.useGps();
 
@@ -197,9 +216,9 @@ public aspect IgnitedLocationManager {
         editor.putLong(IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_INTERVAL,
                 locationUpdatesInterval);
         editor.putInt(IgnitedLocationConstants.SP_KEY_PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF,
-                passiveLocationUpdateDistanceDiff);
+                passiveLocationUpdatesDistanceDiff);
         editor.putLong(IgnitedLocationConstants.SP_KEY_PASSIVE_LOCATION_UPDATES_INTERVAL,
-                passiveLocationUpdateInterval);
+                passiveLocationUpdatesInterval);
         editor.putBoolean(IgnitedLocationConstants.SP_KEY_RUN_ONCE, true);
         editor.commit();
 
@@ -299,8 +318,8 @@ public aspect IgnitedLocationManager {
         if (IgnitedDiagnostics.SUPPORTS_FROYO && enablePassiveLocationUpdates) {
             // Passive location updates from 3rd party apps when the Activity isn't
             // visible. Only for Android 2.2+.
-            locationUpdateRequester.requestPassiveLocationUpdates(locationUpdatesInterval,
-                    locationUpdatesDistanceDiff, locationListenerPassivePendingIntent);
+            locationUpdateRequester.requestPassiveLocationUpdates(passiveLocationUpdatesInterval,
+                    passiveLocationUpdatesDistanceDiff, locationListenerPassivePendingIntent);
         }
     }
 
