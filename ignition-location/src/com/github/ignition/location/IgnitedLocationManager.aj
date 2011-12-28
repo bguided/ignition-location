@@ -92,7 +92,7 @@ public aspect IgnitedLocationManager {
      * running, this Receiver will be notified, allowing us to re-register our Location Receivers
      * using the best available Location Provider is still available.
      */
-    protected BroadcastReceiver locProviderDisabledReceiver = new BroadcastReceiver() {
+    protected BroadcastReceiver locationProviderDisabledReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             boolean providerDisabled = !intent.getBooleanExtra(
@@ -288,6 +288,8 @@ public aspect IgnitedLocationManager {
      * Start listening for location updates.
      */
     protected void requestLocationUpdates(Context context, Criteria criteria) {
+        locationManager.removeUpdates(locationListenerPassivePendingIntent);
+
         Log.d(LOG_TAG, "requesting location updates...");
         // Normal updates while activity is visible.
         locationUpdateRequester.requestLocationUpdates(locationUpdatesInterval,
@@ -295,9 +297,13 @@ public aspect IgnitedLocationManager {
 
         // Register a receiver that listens for when the provider I'm using has
         // been disabled.
-        IntentFilter intentFilter = new IntentFilter(
+        IntentFilter locationProviderDisabledIntentFilter = new IntentFilter(
                 IgnitedLocationConstants.ACTIVE_LOCATION_UPDATE_PROVIDER_DISABLED_ACTION);
-        context.registerReceiver(locProviderDisabledReceiver, intentFilter);
+        context.registerReceiver(locationProviderDisabledReceiver,
+                locationProviderDisabledIntentFilter);
+
+        IntentFilter refreshLocationUpdatesIntentFilter = new IntentFilter(
+                IgnitedLocationConstants.UPDATE_LOCATION_UPDATES_CRITERIA_ACTION);
 
         // Register a receiver that listens for when a better provider than I'm
         // using becomes available.
@@ -314,7 +320,6 @@ public aspect IgnitedLocationManager {
                     IgnitedLocationConstants.WAIT_FOR_GPS_FIX_INTERVAL);
         }
 
-        locationManager.removeUpdates(locationListenerPassivePendingIntent);
         locationUpdatesDisabled = false;
     }
 
@@ -330,7 +335,7 @@ public aspect IgnitedLocationManager {
 
         Log.d(LOG_TAG, "...disabling location updates");
 
-        context.unregisterReceiver(locProviderDisabledReceiver);
+        context.unregisterReceiver(locationProviderDisabledReceiver);
         locationUpdateRequester.removeLocationUpdates();
         if (bestInactiveLocationProviderListener != null) {
             locationManager.removeUpdates(bestInactiveLocationProviderListener);
