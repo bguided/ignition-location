@@ -105,6 +105,13 @@ public aspect IgnitedLocationManager {
         }
     };
 
+    protected BroadcastReceiver refreshLocationUpdatesReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            requestLocationUpdates(context, buildCriteria());
+        }
+    };
+
     after(Context context, IgnitedLocationActivity ignitedAnnotation) : 
         execution(* Activity.onCreate(..)) && this(context)
         && @this(ignitedAnnotation) && within(@IgnitedLocationActivity *) {
@@ -304,6 +311,7 @@ public aspect IgnitedLocationManager {
 
         IntentFilter refreshLocationUpdatesIntentFilter = new IntentFilter(
                 IgnitedLocationConstants.UPDATE_LOCATION_UPDATES_CRITERIA_ACTION);
+        context.registerReceiver(refreshLocationUpdatesReceiver, refreshLocationUpdatesIntentFilter);
 
         // Register a receiver that listens for when a better provider than I'm
         // using becomes available.
@@ -336,6 +344,8 @@ public aspect IgnitedLocationManager {
         Log.d(LOG_TAG, "...disabling location updates");
 
         context.unregisterReceiver(locationProviderDisabledReceiver);
+        context.unregisterReceiver(refreshLocationUpdatesReceiver);
+
         locationUpdateRequester.removeLocationUpdates();
         if (bestInactiveLocationProviderListener != null) {
             locationManager.removeUpdates(bestInactiveLocationProviderListener);
