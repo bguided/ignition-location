@@ -242,7 +242,18 @@ public aspect IgnitedLocationManager {
     }
 
     void around(Location freshLocation) : set(@IgnitedLocation Location *) && args(freshLocation) 
-        && (within(com.github.ignition.location.receivers.*) || within(com.github.ignition.location.utils.*)
+        && within(IgnitedPassiveLocationChangedReceiver) && !adviceexecution() {
+
+        currentLocation = freshLocation;
+        Log.d(LOG_TAG, "New location from " + currentLocation.getProvider() + " (lat, long): "
+                + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
+        if (context != null) {
+            ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(currentLocation);
+        }
+    }
+
+    void around(Location freshLocation) : set(@IgnitedLocation Location *) && args(freshLocation) 
+        && (within(IgnitedLocationChangedReceiver) || within(com.github.ignition.location.utils.*)
                 || within(IgnitedLastKnownLocationAsyncTask)) && !adviceexecution() {
 
         currentLocation = freshLocation;
