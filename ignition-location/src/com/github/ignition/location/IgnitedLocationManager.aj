@@ -354,7 +354,11 @@ public aspect IgnitedLocationManager {
         if (finishing && ignitedLastKnownLocationTask != null) {
             ignitedLastKnownLocationTask.cancel(true);
         }
-        if (IgnitedDiagnostics.SUPPORTS_FROYO && enablePassiveLocationUpdates) {
+
+        if (IgnitedDiagnostics.SUPPORTS_FROYO
+                && prefs.getBoolean(IgnitedLocationConstants.SP_KEY_FOLLOW_LOCATION_CHANGES,
+                        IgnitedLocationConstants.ENABLE_PASSIVE_LOCATION_UPDATES) && !finishing) {
+            Log.d(LOG_TAG, "Requesting passive location updates");
             // Passive location updates from 3rd party apps when the Activity isn't
             // visible. Only for Android 2.2+.
             locationUpdateRequester.requestPassiveLocationUpdates(passiveLocationUpdatesInterval,
