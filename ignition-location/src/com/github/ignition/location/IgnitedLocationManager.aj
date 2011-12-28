@@ -229,7 +229,7 @@ public aspect IgnitedLocationManager {
         && within(@IgnitedLocationActivity *) && if (ignitedAnnotation.requestLocationUpdates()) {
 
         boolean finishing = activity.isFinishing();
-        disableLocationUpdates(context, ignitedAnnotation.enablePassiveUpdates(), finishing);
+        disableLocationUpdates(context, finishing);
 
         if (finishing) {
             context = null;
@@ -260,9 +260,12 @@ public aspect IgnitedLocationManager {
                 handler.removeCallbacks(removeGpsUpdates);
             }
 
-            if (!keepRequestingLocationUpdates) {
-                disableLocationUpdates(context, false);
-            } else if (refreshDataIfLocationChanges) {
+            if (!keepRequestingLocationUpdates && !locationUpdatesDisabled) {
+                locationUpdateRequester.removeLocationUpdates();
+            } else if (refreshDataIfLocationChanges
+                    && locationUpdatesDisabled
+                    && !freshLocation.getExtras().containsKey(
+                            ILastLocationFinder.LAST_LOCATION_TOO_OLD_EXTRA)) {
                 // If we have requested location updates, turn them on here.
                 requestLocationUpdates(context);
             }
@@ -295,6 +298,7 @@ public aspect IgnitedLocationManager {
         }
 
         locationManager.removeUpdates(locationListenerPassivePendingIntent);
+        locationUpdatesDisabled = false;
     }
 
     /**
@@ -302,8 +306,11 @@ public aspect IgnitedLocationManager {
      * 
      * @param enablePassiveLocationUpdates
      */
-    protected void disableLocationUpdates(Context context, boolean enablePassiveLocationUpdates,
-            boolean finishing) {
+    protected void disableLocationUpdates(Context context, boolean finishing) {
+        if (locationUpdatesDisabled) {
+            return;
+        }
+
         Log.d(LOG_TAG, "...disabling location updates");
 
         context.unregisterReceiver(locProviderDisabledReceiver);
@@ -321,6 +328,9 @@ public aspect IgnitedLocationManager {
             locationUpdateRequester.requestPassiveLocationUpdates(passiveLocationUpdatesInterval,
                     passiveLocationUpdatesDistanceDiff, locationListenerPassivePendingIntent);
         }
+
+        locationUpdatesDisabled = true;
+    }
     }
 
     /**
