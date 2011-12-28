@@ -137,7 +137,7 @@ public class IgnitedLegacyLastLocationFinder implements ILastLocationFinder {
                         "Single Location Update Received from " + location.getProvider()
                                 + " (lat, long): " + location.getLatitude() + ", "
                                 + location.getLongitude());
-                currentLocation = location;
+                setCurrentLocation(location);
                 // if (context instanceof OnIgnitedLocationChangedListener) {
                 // ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(location);
                 // }
@@ -164,5 +164,9 @@ public class IgnitedLegacyLastLocationFinder implements ILastLocationFinder {
     @Override
     public void cancel() {
         locationManager.removeUpdates(this.singeUpdateListener);
+    }
+
+    public void setCurrentLocation(Location currentLocation) {
+        this.currentLocation = currentLocation;
     }
 }

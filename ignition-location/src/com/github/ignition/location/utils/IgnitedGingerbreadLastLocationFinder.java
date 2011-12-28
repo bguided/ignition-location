@@ -148,10 +148,10 @@ public class IgnitedGingerbreadLastLocationFinder implements ILastLocationFinder
                         "...just got a brand new location from " + location.getProvider()
                                 + " (lat, long): " + location.getLatitude() + ", "
                                 + location.getLongitude());
-                currentLocation = location;
                 // if (context instanceof OnIgnitedLocationChangedListener) {
                 // ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(location);
                 // }
+                setCurrentLocation(location);
             }
 
             IgnitedGingerbreadLastLocationFinder.this.locationManager
@@ -165,5 +165,9 @@ public class IgnitedGingerbreadLastLocationFinder implements ILastLocationFinder
     @Override
     public void cancel() {
         this.locationManager.removeUpdates(this.singleUpatePI);
+    }
+
+    public void setCurrentLocation(Location currentLocation) {
+        this.currentLocation = currentLocation;
     }
 }
