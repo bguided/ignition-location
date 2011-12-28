@@ -145,12 +145,9 @@ public class IgnitedGingerbreadLastLocationFinder implements ILastLocationFinder
 
             if (location != null) {
                 Log.d(LOG_TAG,
-                        "...just got a brand new location from " + location.getProvider()
+                        "Single Location Update Received from " + location.getProvider()
                                 + " (lat, long): " + location.getLatitude() + ", "
                                 + location.getLongitude());
-                // if (context instanceof OnIgnitedLocationChangedListener) {
-                // ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(location);
-                // }
                 setCurrentLocation(location);
             }
 

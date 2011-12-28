@@ -42,13 +42,7 @@ public class IgnitedLastKnownLocationAsyncTask extends AsyncTask<Void, Void, Loc
     protected void onPostExecute(Location lastKnownLocation) {
         if (lastKnownLocation != null) {
             currentLocation = lastKnownLocation;
-            // ((OnIgnitedLocationChangedListener)
-            // context).onIgnitedLocationChanged(currentLocation);
-            // Log.d(LOG_TAG,
-            // "Last known location from " + currentLocation.getProvider() + " (lat, long): "
-            // + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
         }
-
     }
 
     /**

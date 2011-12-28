@@ -44,22 +44,6 @@ public class IgnitedLocationSampleActivity extends ListActivity {
         adapter = new ArrayAdapter<Location>(this, android.R.layout.activity_list_item,
                 android.R.id.text1);
         setListAdapter(adapter);
-
-        // ((ToggleButton) findViewById(R.id.ign_loc_button))
-        // .setOnClickListener(new OnClickListener() {
-        //
-        // @Override
-        // public void onClick(View v) {
-        // Intent intent = new Intent(
-        // IgnitedLocationSampleActivity.this,
-        // IgnitedLocationSampleService.class);
-        // if (((ToggleButton) v).isChecked()) {
-        // startService(intent);
-        // } else {
-        // stopService(intent);
-        // }
-        // }
-        // });
     }
 
     @Override

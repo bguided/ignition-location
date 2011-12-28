@@ -45,8 +45,7 @@ public class PowerStateChangedReceiver extends BroadcastReceiver {
                 IgnitedPassiveLocationChangedReceiver.class);
 
         // Disable the passive location update receiver when the battery state
-        // is low. Disabling the Receiver will prevent the app from initiating the
-        // background downloads of nearby locations.
+        // is low.
         pm.setComponentEnabledSetting(passiveLocationReceiver,
                 batteryLow ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED
                         : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,

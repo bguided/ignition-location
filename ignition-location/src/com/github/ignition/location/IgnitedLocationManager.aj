@@ -47,7 +47,6 @@ import com.github.ignition.support.IgnitedDiagnostics;
 
 @SuppressAjWarnings
 public aspect IgnitedLocationManager {
-
     public static final String LOG_TAG = IgnitedLocationManager.class.getSimpleName();
 
     declare parents : (@IgnitedLocationActivity *) implements OnIgnitedLocationChangedListener;

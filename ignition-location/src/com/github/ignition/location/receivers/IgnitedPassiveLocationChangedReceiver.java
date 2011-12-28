@@ -36,7 +36,6 @@ import com.github.ignition.location.utils.IgnitedLegacyLastLocationFinder;
  * Where possible, this is triggered by a Passive Location listener.
  */
 public class IgnitedPassiveLocationChangedReceiver extends BroadcastReceiver {
-
     protected static String LOG_TAG = IgnitedPassiveLocationChangedReceiver.class.getSimpleName();
 
     @IgnitedLocation
@@ -94,10 +93,6 @@ public class IgnitedPassiveLocationChangedReceiver extends BroadcastReceiver {
         if (location != null) {
             Log.d(LOG_TAG, "Passively updating location...");
             currentLocation = location;
-            // if (context instanceof OnIgnitedLocationChangedListener) {
-            // ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(location);
-            // }
         }
-
     }
 }
