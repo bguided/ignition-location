@@ -1,6 +1,5 @@
 package com.github.ignition.location.tests;
 
-import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -50,7 +49,6 @@ public class IgnitedLocationManagerTest {
         shadowLocationManager.setProviderEnabled(LocationManager.NETWORK_PROVIDER, true);
         shadowLocationManager.setLastKnownLocation(LocationManager.GPS_PROVIDER, lastKnownLocation);
 
-        IgnitedDiagnostics.setTest(true);
         IgnitedDiagnostics.setTestApiLevel(IgnitedDiagnostics.GINGERBREAD);
 
         activity.onCreate(null);
@@ -92,7 +90,7 @@ public class IgnitedLocationManagerTest {
     }
 
     @Test
-    public void activelyRequestLocationUpdatesOnResume() {
+    public void shouldActivelyRequestLocationUpdatesOnResume() {
         resume();
 
         List<Wrapper> receivers = shadowApp.getRegisteredReceivers();
@@ -111,7 +109,7 @@ public class IgnitedLocationManagerTest {
     // TODO: find a better way to test this. Now the activity must be resumed twice or an Exception
     // will be thrown because one of the receivers is not registered.
     @Test
-    public void noReceiverRegisteredOnPause() throws Exception {
+    public void shouldNotHaveRegisteredReceiverOnPause() throws Exception {
         resume();
         activity.onPause();
 
@@ -132,7 +130,7 @@ public class IgnitedLocationManagerTest {
     // }
 
     @Test
-    public void ignitedLocationSettingsAreSavedToPreferences() {
+    public void shouldSaveSettingsToPreferences() {
         resume();
 
         SharedPreferences pref = activity.getSharedPreferences(
@@ -174,7 +172,8 @@ public class IgnitedLocationManagerTest {
 
         List<LocationListener> listeners = shadowLocationManager
                 .getRequestLocationUpdateListeners();
-        assertThat(listeners.isEmpty(), is(false));
+        assertThat("A listener should be registers if best provider is disabled",
+                !listeners.isEmpty());
     }
 
     @Test
@@ -194,7 +193,7 @@ public class IgnitedLocationManagerTest {
         resume();
 
         List<Wrapper> receivers = shadowApp.getRegisteredReceivers();
-        assertNotNull(receivers);
+        assertThat(receivers, notNullValue());
         boolean receiverRegistered = false;
         for (Wrapper receiver : receivers) {
             if (receiver.intentFilter.getAction(0).equals(
