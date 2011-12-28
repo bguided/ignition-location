@@ -21,8 +21,10 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.BatteryManager;
 
 import com.github.ignition.location.IgnitedLocationConstants;
+import com.github.ignition.location.IgnitedLocationManager;
 import com.github.ignition.samples.IgnitedLocationSampleActivity;
 import com.github.ignition.support.IgnitedDiagnostics;
 import com.xtremelabs.robolectric.Robolectric;
@@ -49,6 +51,11 @@ public class IgnitedLocationManagerTest {
         shadowLocationManager.setProviderEnabled(LocationManager.NETWORK_PROVIDER, true);
         shadowLocationManager.setLastKnownLocation(LocationManager.GPS_PROVIDER, lastKnownLocation);
 
+        Intent intent = new Intent(Intent.ACTION_BATTERY_CHANGED);
+        intent.putExtra(BatteryManager.EXTRA_LEVEL, 100);
+        intent.putExtra(BatteryManager.EXTRA_SCALE, 100);
+        shadowApp.sendStickyBroadcast(intent);
+
         IgnitedDiagnostics.setTestApiLevel(IgnitedDiagnostics.GINGERBREAD);
 
         activity.onCreate(null);
@@ -70,10 +77,15 @@ public class IgnitedLocationManagerTest {
     }
 
     private Location sendMockLocationBroadcast(String provider) {
+        return sendMockLocationBroadcast(provider, 50f);
+    }
+
+    private Location sendMockLocationBroadcast(String provider, float accuracy) {
         Intent intent = new Intent(IgnitedLocationConstants.ACTIVE_LOCATION_UPDATE_ACTION);
         Location location = new Location(provider);
         location.setLatitude(2.0);
         location.setLongitude(2.0);
+        location.setAccuracy(accuracy);
         intent.putExtra(LocationManager.KEY_LOCATION_CHANGED, location);
         shadowApp.sendBroadcast(intent);
 
@@ -137,6 +149,8 @@ public class IgnitedLocationManagerTest {
                 IgnitedLocationConstants.SHARED_PREFERENCE_FILE, Context.MODE_PRIVATE);
         boolean followLocationChanges = pref.getBoolean(
                 IgnitedLocationConstants.SP_KEY_FOLLOW_LOCATION_CHANGES, true);
+        boolean useGps = pref.getBoolean(IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_USE_GPS,
+                IgnitedLocationConstants.USE_GPS);
         boolean runOnce = pref.getBoolean(IgnitedLocationConstants.SP_KEY_RUN_ONCE, true);
         int locUpdatesDistDiff = pref.getInt(
                 IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_DISTANCE_DIFF,
@@ -152,6 +166,7 @@ public class IgnitedLocationManagerTest {
                 IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL);
 
         assertThat(followLocationChanges, is(true));
+        assertThat(useGps, is(true));
         assertThat(runOnce, is(true));
 
         assertThat(IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF,
@@ -253,6 +268,19 @@ public class IgnitedLocationManagerTest {
         assertThat("Updates from " + LocationManager.GPS_PROVIDER
                 + " provider should be requested when battery power is okay!",
                 locationPendingIntents.containsValue(criteria));
+    }
+
+    @Test
+    public void shouldDisableLocationUpdatesIfOnIgnitedLocationChangedReturnsFalse() {
+        resume();
+
+        assertThat("Location updates shouldn't be disabled at this point", !IgnitedLocationManager
+                .aspectOf().isLocationUpdatesDisabled());
+
+        sendMockLocationBroadcast(LocationManager.GPS_PROVIDER, 10f);
+
+        assertThat("Location updates should be disabled at this point", IgnitedLocationManager
+                .aspectOf().isLocationUpdatesDisabled());
     }
 
     // @Test

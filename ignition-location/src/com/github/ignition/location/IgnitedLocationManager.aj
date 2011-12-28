@@ -367,6 +367,9 @@ public aspect IgnitedLocationManager {
 
         locationUpdatesDisabled = true;
     }
+
+    public boolean isLocationUpdatesDisabled() {
+        return locationUpdatesDisabled;
     }
 
     /**
