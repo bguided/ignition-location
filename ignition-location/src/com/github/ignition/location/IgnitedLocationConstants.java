@@ -53,4 +53,6 @@ public class IgnitedLocationConstants {
     public static final String UPDATE_LOCATION_UPDATES_CRITERIA_ACTION = "com.github.ignition.location.UPDATE_LOCATION_UPDATES_CRITERIA_ACTION";
 
     public static final String IGNITED_LOCATION_PROVIDER = "ignited_location_provider";
+
+    public static final double ACCEPTABLE_BATTERY_LEVEL_TO_USE_GPS = 15.0;
 }

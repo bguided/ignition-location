@@ -33,6 +33,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -112,6 +113,7 @@ public aspect IgnitedLocationManager {
                 Context.MODE_PRIVATE);
         // Get references to the managers
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        criteria = buildCriteria();
 
         // Setup the location update Pending Intents
         Intent activeIntent = new Intent(IgnitedLocationConstants.ACTIVE_LOCATION_UPDATE_ACTION);
@@ -128,25 +130,22 @@ public aspect IgnitedLocationManager {
                 .getLocationUpdateRequester(context);
     }
 
-    private void buildCriteria() {
+    private Criteria buildCriteria() {
         // Specify the Criteria to use when requesting location updates while
         // the application is Active
-        if (criteria == null) {
-            criteria = new Criteria();
-        }
+        Criteria criteria = new Criteria();
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent intent = context.registerReceiver(null, filter);
-        double currentBatteryPercentage = 0.0;
+        double currentLevel = 100.0;
         if (intent != null) {
-            double currentLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            double maxLevel = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-            currentBatteryPercentage = currentLevel / maxLevel;
+            currentLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         }
 
-        // Use gps if it's enabled and if battery level is at least 10%
+        // Use gps if it's enabled and if battery level is at least 15%
         boolean useGps = prefs.getBoolean(IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_USE_GPS,
-                IgnitedLocationConstants.USE_GPS) && currentBatteryPercentage >= BATTERY_OK_FOR_GPS;
+                IgnitedLocationConstants.USE_GPS)
+                && currentLevel >= IgnitedLocationConstants.ACCEPTABLE_BATTERY_LEVEL_TO_USE_GPS;
 
         if (useGps) {
             criteria.setAccuracy(Criteria.ACCURACY_FINE);
@@ -155,6 +154,8 @@ public aspect IgnitedLocationManager {
             criteria.setPowerRequirement(Criteria.POWER_LOW);
             criteria.setAccuracy(Criteria.NO_REQUIREMENT);
         }
+
+        return criteria;
     }
 
     before(Context context, IgnitedLocationActivity ignitedAnnotation) : 
@@ -168,28 +169,17 @@ public aspect IgnitedLocationManager {
 
         saveToPreferences(context, ignitedAnnotation);
 
-        buildCriteria();
-
-        Log.d(LOG_TAG, "Retrieving last known location...");
-        if (currentLocation != null) {
-            boolean keepRequestingLocationUpdates = ((OnIgnitedLocationChangedListener) context)
-                    .onIgnitedLocationChanged(currentLocation);
-            Log.d(LOG_TAG,
-                    "Last known location from " + currentLocation.getProvider() + " (lat, long): "
-                            + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
-            if (!keepRequestingLocationUpdates) {
-                disableLocationUpdates(context, false);
-            } else if (refreshDataIfLocationChanges) {
-                // If we have requested location updates, turn them on here.
-                requestLocationUpdates(context);
-            }
-            return;
+        if (currentLocation == null) {
+            Log.d(LOG_TAG, "Retrieving last known location...");
+            // Get the last known location. This isn't directly affecting the UI, so put it on a
+            // worker thread.
+            ignitedLastKnownLocationTask = new IgnitedLastKnownLocationAsyncTask(
+                    context.getApplicationContext(), locationUpdatesDistanceDiff,
+                    locationUpdatesInterval);
+            ignitedLastKnownLocationTask.execute();
+        } else {
+            requestLocationUpdates(context);
         }
-        // Get the last known location. This isn't directly affecting the UI, so put it on a worker
-        // thread.
-        ignitedLastKnownLocationTask = new IgnitedLastKnownLocationAsyncTask(context.getApplicationContext(), 
-                locationUpdatesDistanceDiff, locationUpdatesInterval);
-        ignitedLastKnownLocationTask.execute();
     }
 
     /**
@@ -270,12 +260,15 @@ public aspect IgnitedLocationManager {
                 requestLocationUpdates(context);
             }
         }
+
+    protected void requestLocationUpdates(Context context) {
+        requestLocationUpdates(context, criteria);
     }
 
     /**
      * Start listening for location updates.
      */
-    protected void requestLocationUpdates(Context context) {
+    protected void requestLocationUpdates(Context context, Criteria criteria) {
         Log.d(LOG_TAG, "requesting location updates...");
         // Normal updates while activity is visible.
         locationUpdateRequester.requestLocationUpdates(locationUpdatesInterval,
