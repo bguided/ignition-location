@@ -77,7 +77,7 @@ public aspect IgnitedLocationManager {
         @Override
         public void run() {
             Log.d(LOG_TAG,
-                    "It looks like GPS isn't working properly (maybe you're indoors or...?). Removing location updates from GPS.");
+                    "It looks like GPS isn't available at this time (i.e.: maybe you're indoors). Removing GPS location updates and requesting network updates.");
 
             Criteria criteria = new Criteria();
             criteria.setPowerRequirement(Criteria.POWER_LOW);
@@ -105,6 +105,9 @@ public aspect IgnitedLocationManager {
         }
     };
 
+    /**
+     * If the battery state is low disable the passive location update receiver.
+     */
     protected BroadcastReceiver refreshLocationUpdatesReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -127,7 +130,7 @@ public aspect IgnitedLocationManager {
 
         criteria = buildCriteria();
 
-        // Setup the location update Pending Intents
+        // Setup the location update Pending Intent
         Intent activeIntent = new Intent(IgnitedLocationConstants.ACTIVE_LOCATION_UPDATE_ACTION);
         locationListenerPendingIntent = PendingIntent.getBroadcast(context, 0, activeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
