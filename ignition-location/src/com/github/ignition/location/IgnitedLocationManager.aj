@@ -111,7 +111,11 @@ public aspect IgnitedLocationManager {
     protected BroadcastReceiver refreshLocationUpdatesReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            requestLocationUpdates(context, buildCriteria());
+            if (isBatteryOk()) {
+                requestPassiveLocationUpdates();
+            } else {
+                locationManager.removeUpdates(locationListenerPassivePendingIntent);
+            }
         }
     };
 
@@ -128,7 +132,19 @@ public aspect IgnitedLocationManager {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         handler = new Handler();
 
-        criteria = buildCriteria();
+        // Specify the Criteria to use when requesting location updates while
+        // the application is Active
+        criteria = new Criteria();
+        // Use gps if it's enabled and if battery level is at least 15%
+        boolean useGps = prefs.getBoolean(IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_USE_GPS,
+                IgnitedLocationConstants.USE_GPS_DEFAULT) && isBatteryOk();
+        if (useGps) {
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
+        } else {
+            criteria.setPowerRequirement(Criteria.POWER_LOW);
+            criteria.setAccuracy(Criteria.NO_REQUIREMENT);
+        }
 
         // Setup the location update Pending Intent
         Intent activeIntent = new Intent(IgnitedLocationConstants.ACTIVE_LOCATION_UPDATE_ACTION);
@@ -145,11 +161,7 @@ public aspect IgnitedLocationManager {
                 .getLocationUpdateRequester(context);
     }
 
-    private Criteria buildCriteria() {
-        // Specify the Criteria to use when requesting location updates while
-        // the application is Active
-        Criteria criteria = new Criteria();
-
+    private boolean isBatteryOk() {
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent intent = context.registerReceiver(null, filter);
         double currentLevel = 100.0;
@@ -157,20 +169,8 @@ public aspect IgnitedLocationManager {
             currentLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         }
 
-        // Use gps if it's enabled and if battery level is at least 15%
-        boolean useGps = prefs.getBoolean(IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_USE_GPS,
-                IgnitedLocationConstants.USE_GPS_DEFAULT)
-                && currentLevel >= IgnitedLocationConstants.MIN_BATTERY_LEVEL_DEFAULT;
-
-        if (useGps) {
-            criteria.setAccuracy(Criteria.ACCURACY_FINE);
-            criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
-        } else {
-            criteria.setPowerRequirement(Criteria.POWER_LOW);
-            criteria.setAccuracy(Criteria.NO_REQUIREMENT);
-        }
-
-        return criteria;
+        return currentLevel >= prefs.getInt(IgnitedLocationConstants.SP_KEY_MIN_BATTERY_LEVEL,
+                IgnitedLocationConstants.MIN_BATTERY_LEVEL_DEFAULT);
     }
 
     before(Context context, IgnitedLocationActivity ignitedAnnotation) : 
