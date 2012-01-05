@@ -151,6 +151,10 @@ public aspect IgnitedLocationManager {
         Intent activeIntent = new Intent(IgnitedLocationConstants.ACTIVE_LOCATION_UPDATE_ACTION);
         locationListenerPendingIntent = PendingIntent.getBroadcast(context, 0, activeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
+        // Setup the passive location update Pending Intent
+        Intent passiveIntent = new Intent(context, IgnitedPassiveLocationChangedReceiver.class);
+        locationListenerPassivePendingIntent = PendingIntent.getBroadcast(context, 0,
+                passiveIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Instantiate a Location Update Requester class based on the available
         // platform version. This will be used to request location updates.
@@ -299,10 +303,9 @@ public aspect IgnitedLocationManager {
      * Start listening for location updates.
      */
     protected void requestLocationUpdates(Context context, Criteria criteria) {
-        if (locationListenerPassivePendingIntent != null) {
-            Log.d(LOG_TAG, "Disabling passive location updates");
-            locationManager.removeUpdates(locationListenerPassivePendingIntent);
-        }
+        Log.d(LOG_TAG, "Disabling passive location updates");
+        locationManager.removeUpdates(locationListenerPassivePendingIntent);
+
         Log.d(LOG_TAG, "Requesting location updates");
         // Normal updates while activity is visible.
         locationUpdateRequester.requestLocationUpdates(locationUpdatesInterval,
@@ -378,14 +381,6 @@ public aspect IgnitedLocationManager {
                         IgnitedLocationConstants.SP_KEY_ENABLE_PASSIVE_LOCATION_UPDATES,
                         IgnitedLocationConstants.ENABLE_PASSIVE_LOCATION_UPDATES_DEFAULT)) {
             Log.d(LOG_TAG, "Requesting passive location updates");
-            if (locationListenerPassivePendingIntent == null) {
-                // Setup the passive location update Pending Intent
-                Intent passiveIntent = new Intent(context,
-                        IgnitedPassiveLocationChangedReceiver.class);
-                locationListenerPassivePendingIntent = PendingIntent.getBroadcast(context, 0,
-                        passiveIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            }
-
             // Passive location updates from 3rd party apps when the Activity isn't
             // visible. Only for Android 2.2+.
             locationUpdateRequester.requestPassiveLocationUpdates(passiveLocationUpdatesInterval,
