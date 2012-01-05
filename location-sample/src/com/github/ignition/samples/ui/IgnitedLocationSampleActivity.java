@@ -67,6 +67,7 @@ public class IgnitedLocationSampleActivity extends MapActivity {
     private TextView waitForGpsFix;
     private TextView minBatteryLevel;
 
+    // MUST BE OVERRIDDEN OR IGNITION LOCATION WON'T WORK!
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,11 +95,13 @@ public class IgnitedLocationSampleActivity extends MapActivity {
         mapOverlays = mapView.getOverlays();
     }
 
+    // MUST BE OVERRIDDEN OR IGNITION LOCATION WON'T WORK!
     @Override
     public void onResume() {
         super.onResume();
     }
 
+    // MUST BE OVERRIDDEN OR IGNITION LOCATION WON'T WORK!
     @Override
     public void onPause() {
         super.onPause();
@@ -192,7 +195,7 @@ public class IgnitedLocationSampleActivity extends MapActivity {
         waitForGpsFix.setText(String.valueOf(settings.getLong(
                 IgnitedLocationConstants.SP_KEY_WAIT_FOR_GPS_FIX_INTERVAL,
                 IgnitedLocationConstants.WAIT_FOR_GPS_FIX_INTERVAL_DEFAULT) / 1000)
-                + " sec");
+                + " secs");
         minBatteryLevel.setText(String.valueOf(settings.getInt(
                 IgnitedLocationConstants.SP_KEY_MIN_BATTERY_LEVEL,
                 IgnitedLocationConstants.MIN_BATTERY_LEVEL_DEFAULT))

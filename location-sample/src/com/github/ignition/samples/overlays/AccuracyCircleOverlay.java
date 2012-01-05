@@ -50,7 +50,6 @@ public class AccuracyCircleOverlay extends Overlay {
         projection.toPixels(geoPoint, pt);
         float circleRadius = metersToRadius(accuracy, projection, geoPoint.getLatitudeE6());
 
-        Log.v(LOG_TAG, "Circle Radius : " + circleRadius);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(0x186666ff);
         paint.setStyle(Style.FILL_AND_STROKE);
