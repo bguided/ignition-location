@@ -152,10 +152,6 @@ public aspect IgnitedLocationManager {
         locationListenerPendingIntent = PendingIntent.getBroadcast(context, 0, activeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Intent passiveIntent = new Intent(context, IgnitedPassiveLocationChangedReceiver.class);
-        locationListenerPassivePendingIntent = PendingIntent.getBroadcast(context, 0,
-                passiveIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
         // Instantiate a Location Update Requester class based on the available
         // platform version. This will be used to request location updates.
         locationUpdateRequester = PlatformSpecificImplementationFactory
@@ -309,9 +305,11 @@ public aspect IgnitedLocationManager {
      * Start listening for location updates.
      */
     protected void requestLocationUpdates(Context context, Criteria criteria) {
-        locationManager.removeUpdates(locationListenerPassivePendingIntent);
-
-        Log.d(LOG_TAG, "requesting location updates...");
+        if (locationListenerPassivePendingIntent != null) {
+            Log.d(LOG_TAG, "Disabling passive location updates");
+            locationManager.removeUpdates(locationListenerPassivePendingIntent);
+        }
+        Log.d(LOG_TAG, "Requesting location updates");
         // Normal updates while activity is visible.
         locationUpdateRequester.requestLocationUpdates(locationUpdatesInterval,
                 locationUpdatesDistanceDiff, criteria, locationListenerPendingIntent);
