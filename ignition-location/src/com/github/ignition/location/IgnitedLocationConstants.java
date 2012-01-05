@@ -57,6 +57,6 @@ public class IgnitedLocationConstants {
 
     public static final int MIN_BATTERY_LEVEL_DEFAULT = 15;
 
-    public static final long WAIT_FOR_GPS_FIX_INTERVAL_DEFAULT = 60000; // ms
+    public static final long WAIT_FOR_GPS_FIX_INTERVAL_DEFAULT = 30000; // 30s
 
 }
