@@ -365,7 +365,7 @@ public aspect IgnitedLocationManager {
             ignitedLastKnownLocationTask.cancel(true);
         }
 
-        if (requestPassiveLocationUpdates) {
+        if (requestPassiveLocationUpdates && !finishing) {
             requestPassiveLocationUpdates();
         }
 
