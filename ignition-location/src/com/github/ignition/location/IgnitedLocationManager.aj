@@ -83,6 +83,7 @@ public aspect IgnitedLocationManager {
             criteria.setPowerRequirement(Criteria.POWER_LOW);
             criteria.setAccuracy(Criteria.NO_REQUIREMENT);
 
+            disableLocationUpdates(false);
             requestLocationUpdates(context, criteria);
         }
     };
@@ -192,7 +193,11 @@ public aspect IgnitedLocationManager {
                     locationUpdatesInterval);
             ignitedLastKnownLocationTask.execute();
         } else {
-            requestLocationUpdates(context);
+            boolean keepRequestingLocationUpdates = ((OnIgnitedLocationChangedListener) context)
+                    .onIgnitedLocationChanged(currentLocation);
+            if (keepRequestingLocationUpdates) {
+                requestLocationUpdates(context);
+            }
         }
     }
 
@@ -239,11 +244,11 @@ public aspect IgnitedLocationManager {
         && @this(ignitedAnnotation) && this(activity)
         && within(@IgnitedLocationActivity *) && if (ignitedAnnotation.requestLocationUpdates()) {
 
-        boolean finishing = activity.isFinishing();
-        disableLocationUpdates(context, finishing);
+        disableLocationUpdates(true);
 
         handler.removeCallbacks(removeGpsUpdates);
 
+        boolean finishing = activity.isFinishing();
         if (finishing) {
             context = null;
         }
@@ -279,7 +284,7 @@ public aspect IgnitedLocationManager {
             boolean keepRequestingLocationUpdates = ((OnIgnitedLocationChangedListener) context)
                     .onIgnitedLocationChanged(currentLocation);
             if (!keepRequestingLocationUpdates && !locationUpdatesDisabled) {
-                locationUpdateRequester.removeLocationUpdates();
+                disableLocationUpdates(true);
             } else if (enableLocationUpdates
                     && locationUpdatesDisabled
                     && !freshLocation.getExtras().containsKey(
@@ -346,13 +351,12 @@ public aspect IgnitedLocationManager {
      * 
      * @param enablePassiveLocationUpdates
      */
-    protected void disableLocationUpdates(Context context, boolean finishing) {
+    protected void disableLocationUpdates(boolean requestPassiveLocationUpdates) {
         if (locationUpdatesDisabled) {
             return;
         }
 
-        Log.d(LOG_TAG, "...disabling location updates");
-
+        Log.d(LOG_TAG, "Disabling location updates");
         context.unregisterReceiver(locationProviderDisabledReceiver);
         context.unregisterReceiver(refreshLocationUpdatesReceiver);
 
@@ -361,10 +365,19 @@ public aspect IgnitedLocationManager {
             locationManager.removeUpdates(bestInactiveLocationProviderListener);
         }
 
+        boolean finishing = ((Activity) context).isFinishing();
         if (finishing && ignitedLastKnownLocationTask != null) {
             ignitedLastKnownLocationTask.cancel(true);
         }
 
+        if (requestPassiveLocationUpdates) {
+            requestPassiveLocationUpdates();
+        }
+
+        locationUpdatesDisabled = true;
+    }
+
+    private void requestPassiveLocationUpdates() {
         if (IgnitedDiagnostics.SUPPORTS_FROYO
                 && prefs.getBoolean(
                         IgnitedLocationConstants.SP_KEY_ENABLE_PASSIVE_LOCATION_UPDATES,
