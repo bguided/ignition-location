@@ -26,18 +26,21 @@ import com.github.ignition.location.IgnitedLocationConstants;
 @Target({ ElementType.TYPE })
 public @interface IgnitedLocationActivity {
 
-    boolean useGps() default IgnitedLocationConstants.USE_GPS;
+    boolean useGps() default IgnitedLocationConstants.USE_GPS_DEFAULT;
 
-    boolean requestLocationUpdates() default IgnitedLocationConstants.REFRESH_DATA_ON_LOCATION_CHANGED;
+    boolean requestLocationUpdates() default IgnitedLocationConstants.ENABLE_LOCATION_UPDATES_DEFAULT;
 
-    int locationUpdatesDistanceDiff() default IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF;
+    int locationUpdatesDistanceDiff() default IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF_DEFAULT;
 
-    long locationUpdatesInterval() default IgnitedLocationConstants.LOCATION_UPDATES_INTERVAL;
+    long locationUpdatesInterval() default IgnitedLocationConstants.LOCATION_UPDATES_INTERVAL_DEFAULT;
 
-    int passiveLocationUpdatesDistanceDiff() default IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF;
+    int passiveLocationUpdatesDistanceDiff() default IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF_DEFAULT;
 
-    long passiveLocationUpdatesInterval() default IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL;
+    long passiveLocationUpdatesInterval() default IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL_DEFAULT;
 
-    boolean enablePassiveUpdates() default IgnitedLocationConstants.ENABLE_PASSIVE_LOCATION_UPDATES;
+    boolean enablePassiveUpdates() default IgnitedLocationConstants.ENABLE_PASSIVE_LOCATION_UPDATES_DEFAULT;
 
+    long waitForGpsFix() default IgnitedLocationConstants.WAIT_FOR_GPS_FIX_INTERVAL_DEFAULT;
+
+    int minBatteryLevel() default IgnitedLocationConstants.MIN_BATTERY_LEVEL_DEFAULT;
 }

@@ -17,7 +17,7 @@
 package com.github.ignition.location.receivers;
 
 import static com.github.ignition.location.IgnitedLocationConstants.SHARED_PREFERENCE_FILE;
-import static com.github.ignition.location.IgnitedLocationConstants.SP_KEY_FOLLOW_LOCATION_CHANGES;
+import static com.github.ignition.location.IgnitedLocationConstants.SP_KEY_ENABLE_PASSIVE_LOCATION_UPDATES;
 import static com.github.ignition.location.IgnitedLocationConstants.SP_KEY_RUN_ONCE;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -46,12 +46,14 @@ public class BootReceiver extends BroadcastReceiver {
         if (runOnce) {
             // Check the Shared Preferences to see if we are updating location
             // changes.
-            boolean followLocationChanges = prefs.getBoolean(SP_KEY_FOLLOW_LOCATION_CHANGES, true);
+            boolean followLocationChanges = prefs
+                    .getBoolean(SP_KEY_ENABLE_PASSIVE_LOCATION_UPDATES, true);
 
             if (followLocationChanges && IgnitedDiagnostics.SUPPORTS_FROYO) {
                 // Passive location updates from 3rd party apps when the
                 // Activity isn't visible.
-                Intent passiveIntent = new Intent(context, IgnitedPassiveLocationChangedReceiver.class);
+                Intent passiveIntent = new Intent(context,
+                        IgnitedPassiveLocationChangedReceiver.class);
                 PendingIntent locationListenerPassivePendingIntent = PendingIntent.getBroadcast(
                         context, 0, passiveIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -62,10 +64,10 @@ public class BootReceiver extends BroadcastReceiver {
                         .getLocationUpdateRequester(context.getApplicationContext());
                 long passiveLocationUpdateInterval = prefs.getLong(
                         IgnitedLocationConstants.SP_KEY_PASSIVE_LOCATION_UPDATES_INTERVAL,
-                        IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL);
+                        IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL_DEFAULT);
                 int passiveLocationUpdateDistanceDiff = prefs.getInt(
                         IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_DISTANCE_DIFF,
-                        IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF);
+                        IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF_DEFAULT);
                 locationUpdateRequester.requestPassiveLocationUpdates(
                         passiveLocationUpdateInterval, passiveLocationUpdateDistanceDiff,
                         locationListenerPassivePendingIntent);

@@ -18,33 +18,33 @@ package com.github.ignition.location;
 
 public class IgnitedLocationConstants {
 
-    public static final boolean USE_GPS = true;
-
-    public static final boolean REFRESH_DATA_ON_LOCATION_CHANGED = true;
-
+    public static final boolean USE_GPS_DEFAULT = true;
+    public static final boolean ENABLE_LOCATION_UPDATES_DEFAULT = true;
     // The maximum distance the user should travel between location updates.
-    public static final int LOCATION_UPDATES_DISTANCE_DIFF = 100; // meters
+    public static final int LOCATION_UPDATES_DISTANCE_DIFF_DEFAULT = 100; // meters
     // The maximum time that should pass before the user gets a location update.
-    public static final long LOCATION_UPDATES_INTERVAL = 5 * 60 * 1000; // 5 minutes
-
+    public static final long LOCATION_UPDATES_INTERVAL_DEFAULT = 5 * 60 * 1000; // 5 minutes
     // You will generally want passive location updates to occur less frequently
     // than active updates. You need to balance location freshness with battery
     // life. The location update distance for passive updates.
-    public static final int PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF = LOCATION_UPDATES_DISTANCE_DIFF;
+    public static final int PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF_DEFAULT = LOCATION_UPDATES_DISTANCE_DIFF_DEFAULT;
     // The location update time for passive updates
-    public static final long PASSIVE_LOCATION_UPDATES_INTERVAL = LOCATION_UPDATES_INTERVAL * 3;
+    public static final long PASSIVE_LOCATION_UPDATES_INTERVAL_DEFAULT = LOCATION_UPDATES_INTERVAL_DEFAULT * 3;
     // When the user exits via the back button, do you want to disable
     // passive background updates.
-    public static final boolean ENABLE_PASSIVE_LOCATION_UPDATES = true;
+    public static final boolean ENABLE_PASSIVE_LOCATION_UPDATES_DEFAULT = true;
 
     public static final String SHARED_PREFERENCE_FILE = "IgnitedLocationManagerPreference";
     public static final String SP_KEY_RUN_ONCE = "sp_key_run_once";
-    public static final String SP_KEY_FOLLOW_LOCATION_CHANGES = "sp_key_follow_location_changes";
+    public static final String SP_KEY_ENABLE_LOCATION_UPDATES = "sp_key_enable_location_updates";
+    public static final String SP_KEY_ENABLE_PASSIVE_LOCATION_UPDATES = "sp_key_enable_passive_location_updates";
     public static final String SP_KEY_LOCATION_UPDATES_USE_GPS = "sp_key_location_updates_use_gps";
     public static final String SP_KEY_LOCATION_UPDATES_DISTANCE_DIFF = "sp_location_updates_distance_diff";
     public static final String SP_KEY_LOCATION_UPDATES_INTERVAL = "sp_key_location_updates_interval";
     public static final String SP_KEY_PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF = "sp_passive_location_updates_distance_diff";
     public static final String SP_KEY_PASSIVE_LOCATION_UPDATES_INTERVAL = "sp_key_passive_location_updates_interval";
+    public static final String SP_KEY_MIN_BATTERY_LEVEL = "sp_key_min_battery_level";
+    public static final String SP_KEY_WAIT_FOR_GPS_FIX_INTERVAL = "sp_key_wait_for_gps_fix_interval";
 
     // public static final String PASSIVE_LOCATION_UPDATE_ACTION =
     // "com.github.ignition.location.passive_location_update_action";
@@ -52,9 +52,11 @@ public class IgnitedLocationConstants {
     public static final String ACTIVE_LOCATION_UPDATE_ACTION = "com.github.ignition.location.ACTIVE_LOCATION_UPDATE_ACTION";
     public static final String UPDATE_LOCATION_UPDATES_CRITERIA_ACTION = "com.github.ignition.location.UPDATE_LOCATION_UPDATES_CRITERIA_ACTION";
 
-    public static final String IGNITED_LOCATION_PROVIDER = "ignited_location_provider";
+    public static final String IGNITED_LOCATION_EXTRA = "ignited_location_extra";
+    public static final String IGNITED_LAST_LOCATION_EXTRA = "ignited_last_location_extra";
 
-    public static final double ACCEPTABLE_BATTERY_LEVEL_TO_USE_GPS = 15.0;
+    public static final int MIN_BATTERY_LEVEL_DEFAULT = 15;
 
-    public static final long WAIT_FOR_GPS_FIX_INTERVAL = 60000; // ms
+    public static final long WAIT_FOR_GPS_FIX_INTERVAL_DEFAULT = 60000; // ms
+
 }

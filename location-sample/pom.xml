@@ -20,6 +20,12 @@
       <artifactId>android</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.google.android.maps</groupId>
+      <artifactId>maps</artifactId>
+      <version>10_r2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>aspectjrt</artifactId>
     </dependency>
@@ -39,6 +45,16 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>analytics</artifactId>
+      <version>1.4.2</version>
+    </dependency>
+    <!-- <dependency> -->
+    <!-- <groupId>com.bugsense</groupId> -->
+    <!-- <artifactId>bugsense-trace</artifactId> -->
+    <!-- <version>1.1</version> -->
+    <!-- </dependency> -->
   </dependencies>
 
   <build>

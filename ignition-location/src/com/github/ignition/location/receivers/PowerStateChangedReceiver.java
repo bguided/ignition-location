@@ -51,10 +51,10 @@ public class PowerStateChangedReceiver extends BroadcastReceiver {
                         : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
                 PackageManager.DONT_KILL_APP);
 
-        if (prefs.getBoolean(IgnitedLocationConstants.SP_KEY_FOLLOW_LOCATION_CHANGES,
-                IgnitedLocationConstants.ENABLE_PASSIVE_LOCATION_UPDATES)
+        if (prefs.getBoolean(IgnitedLocationConstants.SP_KEY_ENABLE_PASSIVE_LOCATION_UPDATES,
+                IgnitedLocationConstants.ENABLE_PASSIVE_LOCATION_UPDATES_DEFAULT)
                 && prefs.getBoolean(IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_USE_GPS,
-                        IgnitedLocationConstants.USE_GPS)) {
+                        IgnitedLocationConstants.USE_GPS_DEFAULT)) {
 
             Intent changeCriteriaIntent = new Intent(
                     IgnitedLocationConstants.UPDATE_LOCATION_UPDATES_CRITERIA_ACTION);

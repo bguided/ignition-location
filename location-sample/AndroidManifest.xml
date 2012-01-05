@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.github.ignition.location.example" android:versionCode="1"
+    package="com.github.ignition.samples" android:versionCode="1"
     android:versionName="0.1">
 
     <uses-sdk android:minSdkVersion="4" />
@@ -17,7 +17,7 @@
     <application android:icon="@drawable/icon"
         android:label="@string/app_name">
 
-        <activity android:name="com.github.ignition.samples.IgnitedLocationSampleActivity"
+        <activity android:name=".ui.IgnitedLocationSampleActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,6 +25,8 @@
             </intent-filter>
         </activity>
 
+        <!-- these broadcast receivers are necessary in order for the ignition-location 
+        library to work -->
 
         <receiver android:name="com.github.ignition.location.receivers.IgnitedLocationChangedReceiver" >
             <intent-filter >
@@ -48,6 +50,8 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <uses-library android:name="com.google.android.maps" />
 
     </application>
 

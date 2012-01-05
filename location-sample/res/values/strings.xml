@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Ignition Location Sample Activity</string>
+
+    <string name="app_name">Ignition Location Sample App</string>
+    
+    <!-- Settings -->
+    <string name="use_gps">Use GPS</string>
+    <string name="updates">Updates</string>
+    <string name="passive_updates">Passive updates</string>
+    <string name="update_interval">Update interval</string>
+    <string name="update_distance">Update distance</string>
+    <string name="passive_interval">Passive interval</string>
+    <string name="passive_distance">Passive distance</string>
+
 </resources>

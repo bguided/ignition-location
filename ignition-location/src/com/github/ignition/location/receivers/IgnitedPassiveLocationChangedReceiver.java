@@ -66,10 +66,10 @@ public class IgnitedPassiveLocationChangedReceiver extends BroadcastReceiver {
                     Context.MODE_PRIVATE);
             long locationUpdateInterval = prefs.getLong(
                     IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_INTERVAL,
-                    IgnitedLocationConstants.LOCATION_UPDATES_INTERVAL);
+                    IgnitedLocationConstants.LOCATION_UPDATES_INTERVAL_DEFAULT);
             int locationUpdateDistanceDiff = prefs.getInt(
                     IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_DISTANCE_DIFF,
-                    IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF);
+                    IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF_DEFAULT);
 
             // Get the best last location detected from the providers.
             IgnitedLegacyLastLocationFinder lastLocationFinder = new IgnitedLegacyLastLocationFinder(
