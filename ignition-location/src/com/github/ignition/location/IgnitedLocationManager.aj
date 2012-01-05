@@ -235,7 +235,7 @@ public aspect IgnitedLocationManager {
 
     }
 
-    after(Activity activity, IgnitedLocationActivity ignitedAnnotation) : execution(* Activity.onPause(..)) 
+    before(Activity activity, IgnitedLocationActivity ignitedAnnotation) : execution(* Activity.onPause(..)) 
         && @this(ignitedAnnotation) && this(activity)
         && within(@IgnitedLocationActivity *) && if (ignitedAnnotation.requestLocationUpdates()) {
 
