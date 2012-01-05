@@ -263,9 +263,9 @@ public aspect IgnitedLocationManager {
         currentLocation = freshLocation;
         Log.d(LOG_TAG, "New location from " + currentLocation.getProvider() + " (lat, long): "
                 + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
-        if (context != null) {
-            ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(currentLocation);
-        }
+//        if (context != null) {
+//            ((OnIgnitedLocationChangedListener) context).onIgnitedLocationChanged(currentLocation);
+//        }
     }
 
     void around(Location freshLocation) : set(@IgnitedLocation Location *) && args(freshLocation) 
