@@ -180,21 +180,13 @@ public aspect IgnitedLocationManager {
 
         saveToPreferences(context, ignitedAnnotation);
 
-        if (currentLocation == null) {
-            Log.d(LOG_TAG, "Retrieving last known location...");
-            // Get the last known location. This isn't directly affecting the UI, so put it on a
-            // worker thread.
-            ignitedLastKnownLocationTask = new IgnitedLastKnownLocationAsyncTask(
-                    context.getApplicationContext(), locationUpdatesDistanceDiff,
-                    locationUpdatesInterval);
-            ignitedLastKnownLocationTask.execute();
-        } else {
-            boolean keepRequestingLocationUpdates = ((OnIgnitedLocationChangedListener) context)
-                    .onIgnitedLocationChanged(currentLocation);
-            if (keepRequestingLocationUpdates) {
-                requestLocationUpdates(context);
-            }
-        }
+        Log.d(LOG_TAG, "Retrieving last known location...");
+        // Get the last known location. This isn't directly affecting the UI, so put it on a
+        // worker thread.
+        ignitedLastKnownLocationTask = new IgnitedLastKnownLocationAsyncTask(
+                context.getApplicationContext(), locationUpdatesDistanceDiff,
+                locationUpdatesInterval);
+        ignitedLastKnownLocationTask.execute();
     }
 
     /**
