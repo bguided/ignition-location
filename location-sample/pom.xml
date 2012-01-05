@@ -50,11 +50,11 @@
       <artifactId>analytics</artifactId>
       <version>1.4.2</version>
     </dependency>
-    <!-- <dependency> -->
-    <!-- <groupId>com.bugsense</groupId> -->
-    <!-- <artifactId>bugsense-trace</artifactId> -->
-    <!-- <version>1.1</version> -->
-    <!-- </dependency> -->
+    <dependency>
+      <groupId>com.bugsense</groupId>
+      <artifactId>bugsense-trace</artifactId>
+      <version>1.1.2</version>
+    </dependency>
   </dependencies>
 
   <build>

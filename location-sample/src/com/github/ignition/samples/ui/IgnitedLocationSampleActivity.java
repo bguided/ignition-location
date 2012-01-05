@@ -32,6 +32,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bugsense.trace.BugSenseHandler;
 import com.github.ignition.location.IgnitedLocationConstants;
 import com.github.ignition.location.annotations.IgnitedLocation;
 import com.github.ignition.location.annotations.IgnitedLocationActivity;
@@ -70,6 +71,8 @@ public class IgnitedLocationSampleActivity extends MapActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.location_update_list_activity);
+
+        BugSenseHandler.setup(this, "930aa554");
 
         inflater = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE));
 
