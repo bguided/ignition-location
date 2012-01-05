@@ -63,6 +63,8 @@ public class IgnitedLocationSampleActivity extends MapActivity {
     @IgnitedLocation
     private Location currentLocation;
     private LayoutInflater inflater;
+    private TextView waitForGpsFix;
+    private TextView minBatteryLevel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,6 +80,8 @@ public class IgnitedLocationSampleActivity extends MapActivity {
         distance = (TextView) findViewById(R.id.val_update_distance);
         passiveInterval = (TextView) findViewById(R.id.val_passive_interval);
         passiveDistance = (TextView) findViewById(R.id.val_passive_distance);
+        waitForGpsFix = (TextView) findViewById(R.id.val_wait_for_gps_fix);
+        minBatteryLevel = (TextView) findViewById(R.id.val_min_battery_level);
         mapView = (MapView) findViewById(R.id.mapView);
 
         displayLocationSettings();
@@ -182,6 +186,14 @@ public class IgnitedLocationSampleActivity extends MapActivity {
                 IgnitedLocationConstants.SP_KEY_PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF,
                 IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF_DEFAULT))
                 + " m");
+        waitForGpsFix.setText(String.valueOf(settings.getLong(
+                IgnitedLocationConstants.SP_KEY_WAIT_FOR_GPS_FIX_INTERVAL,
+                IgnitedLocationConstants.WAIT_FOR_GPS_FIX_INTERVAL_DEFAULT) / 1000)
+                + " sec");
+        minBatteryLevel.setText(String.valueOf(settings.getInt(
+                IgnitedLocationConstants.SP_KEY_MIN_BATTERY_LEVEL,
+                IgnitedLocationConstants.MIN_BATTERY_LEVEL_DEFAULT))
+                + "%");
     }
 
     private void displayNewLocation() {

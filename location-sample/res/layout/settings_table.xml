@@ -96,5 +96,31 @@
         style="@style/settings_text_right">
       </TextView>
     </TableRow>
+   
+    <TableRow style="@style/Fill.Width">
+
+      <TextView
+        style="@style/settings_text"
+        android:text="@string/wait_for_gps_fix">
+      </TextView>
+
+      <TextView
+        android:id="@+id/val_wait_for_gps_fix"
+        style="@style/settings_text_right">
+      </TextView>
+    </TableRow>
+    
+    <TableRow style="@style/Fill.Width">
+
+      <TextView
+        style="@style/settings_text"
+        android:text="@string/min_battery_level">
+      </TextView>
+
+      <TextView
+        android:id="@+id/val_min_battery_level"
+        style="@style/settings_text_right">
+      </TextView>
+    </TableRow>
   </TableLayout>
 </LinearLayout>
