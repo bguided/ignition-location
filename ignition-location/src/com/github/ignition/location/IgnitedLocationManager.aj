@@ -291,7 +291,9 @@ public aspect IgnitedLocationManager {
         }
 
         // If gps is enabled location comes from gps, remove runnable that removes gps updates
-        if (criteria.getAccuracy() == Criteria.ACCURACY_FINE
+        boolean lastLocation = freshLocation.getExtras().getBoolean(
+                IgnitedLocationConstants.IGNITED_LAST_LOCATION_EXTRA);
+        if (!lastLocation && criteria.getAccuracy() == Criteria.ACCURACY_FINE
                 && currentLocation.getProvider().equals(LocationManager.GPS_PROVIDER)) {
             handler.removeCallbacks(removeGpsUpdates);
         }
@@ -333,7 +335,10 @@ public aspect IgnitedLocationManager {
             bestInactiveLocationProviderListener = new IgnitedLocationListener(context);
             locationManager.requestLocationUpdates(bestProvider, 0, 0,
                     bestInactiveLocationProviderListener, context.getMainLooper());
-        } else {
+        }
+
+        if (bestAvailableProvider.equals(LocationManager.GPS_PROVIDER)) {
+            Log.d(LOG_TAG, "Posting delayed remove GPS updates message");
             // Post a runnable that will remove gps updates if no gps location is returned after 1
             // minute in order to avoid draining the battery.
             handler.postDelayed(removeGpsUpdates, prefs.getLong(
@@ -394,8 +399,6 @@ public aspect IgnitedLocationManager {
             locationUpdateRequester.requestPassiveLocationUpdates(passiveLocationUpdatesInterval,
                     passiveLocationUpdatesDistanceDiff, locationListenerPassivePendingIntent);
         }
-
-        locationUpdatesDisabled = true;
     }
 
     public boolean isLocationUpdatesDisabled() {
