@@ -23,6 +23,7 @@
   <properties>
     <androidApiLevel>10</androidApiLevel>
     <androidVersion>2.3.3</androidVersion>
+    <androidApiRevision>r2</androidApiRevision>
   </properties>
 
   <dependencyManagement>
@@ -30,7 +31,13 @@
       <dependency>
         <groupId>android</groupId>
         <artifactId>android</artifactId>
-        <version>${androidVersion}_r2</version>
+        <version>${androidVersion}_${androidApiRevision}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.android.maps</groupId>
+        <artifactId>maps</artifactId>
+        <version>${androidApiLevel}_${androidApiRevision}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -46,13 +53,13 @@
     <pluginManagement>
       <plugins>
         <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-eclipse-plugin</artifactId>
+          <configuration>
             <sourceIncludes>
-                <sourceInclude>**/*.aj</sourceInclude>
+              <sourceInclude>**/*.aj</sourceInclude>
             </sourceIncludes>
-        </configuration>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -63,12 +70,12 @@
           </configuration>
           <executions>
             <execution>
-              <!-- phase need to be before compile, or the build will 
-                fail. More info here: http://stackoverflow.com/questions/2610633/maven-compile-aspectj-project-containing-java-1-6-source -->
+              <!-- phase need to be before compile, or the build will fail. 
+                More info here: http://stackoverflow.com/questions/2610633/maven-compile-aspectj-project-containing-java-1-6-source -->
               <phase>process-sources</phase>
               <goals>
                 <goal>compile</goal>
-<!--                 <goal>test-compile</goal> -->
+                <!-- <goal>test-compile</goal> -->
               </goals>
             </execution>
           </executions>

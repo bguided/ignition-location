@@ -22,6 +22,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>com.google.android.maps</groupId>
+      <artifactId>maps</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.github.ignition</groupId>
       <artifactId>location-sample</artifactId>
       <version>${project.version}</version>
