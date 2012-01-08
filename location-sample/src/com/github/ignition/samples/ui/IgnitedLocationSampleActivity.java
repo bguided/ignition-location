@@ -56,11 +56,11 @@ public class IgnitedLocationSampleActivity extends MapActivity {
     private TextView passiveDistance;
     private MapView mapView;
 
-    private static final int FEEDBACK_DIALOG = 1;
+    // private static final int FEEDBACK_DIALOG = 1;
 
     private List<Overlay> mapOverlays;
     private MapController mapController;
-    private long time;
+    // private long time;
     @IgnitedLocation
     private Location currentLocation;
     private LayoutInflater inflater;
@@ -106,6 +106,21 @@ public class IgnitedLocationSampleActivity extends MapActivity {
     @Override
     public void onPause() {
         super.onPause();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -216,8 +231,8 @@ public class IgnitedLocationSampleActivity extends MapActivity {
         time.setText(DateFormat.format("hh:mm:ss", new Date(currentLocation.getTime())));
         accuracy.setText(currentLocation.getAccuracy() + "m");
         provider.setText(currentLocation.getProvider());
-        latitude.setText("" + currentLocation.getLatitude());
-        longitude.setText("" + currentLocation.getLongitude());
+        latitude.setText(String.valueOf(currentLocation.getLatitude()));
+        longitude.setText(String.valueOf(currentLocation.getLongitude()));
 
         String providerName = currentLocation.getProvider();
         if (providerName.equalsIgnoreCase("network")) {
@@ -242,4 +257,11 @@ public class IgnitedLocationSampleActivity extends MapActivity {
         return bool ? "ON" : "OFF";
     }
 
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public int getLocationCount() {
+        return viewGroup.getChildCount();
+    }
 }

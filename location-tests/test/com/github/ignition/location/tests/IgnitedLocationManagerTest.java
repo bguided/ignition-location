@@ -25,7 +25,7 @@ import android.os.BatteryManager;
 
 import com.github.ignition.location.IgnitedLocationConstants;
 import com.github.ignition.location.IgnitedLocationManager;
-import com.github.ignition.samples.IgnitedLocationSampleActivity;
+import com.github.ignition.samples.ui.IgnitedLocationSampleActivity;
 import com.github.ignition.support.IgnitedDiagnostics;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.shadows.ShadowActivity;
@@ -148,33 +148,34 @@ public class IgnitedLocationManagerTest {
         SharedPreferences pref = activity.getSharedPreferences(
                 IgnitedLocationConstants.SHARED_PREFERENCE_FILE, Context.MODE_PRIVATE);
         boolean followLocationChanges = pref.getBoolean(
-                IgnitedLocationConstants.SP_KEY_FOLLOW_LOCATION_CHANGES, true);
+                IgnitedLocationConstants.SP_KEY_ENABLE_PASSIVE_LOCATION_UPDATES, true);
         boolean useGps = pref.getBoolean(IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_USE_GPS,
-                IgnitedLocationConstants.USE_GPS);
+                IgnitedLocationConstants.USE_GPS_DEFAULT);
         boolean runOnce = pref.getBoolean(IgnitedLocationConstants.SP_KEY_RUN_ONCE, true);
         int locUpdatesDistDiff = pref.getInt(
                 IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_DISTANCE_DIFF,
-                IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF);
+                IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF_DEFAULT);
         long locUpdatesInterval = pref.getLong(
                 IgnitedLocationConstants.SP_KEY_LOCATION_UPDATES_INTERVAL,
-                IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL);
+                IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL_DEFAULT);
         int passiveLocUpdatesDistDiff = pref.getInt(
                 IgnitedLocationConstants.SP_KEY_PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF,
-                IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF);
+                IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF_DEFAULT);
         long passiveLocUpdatesInterval = pref.getLong(
                 IgnitedLocationConstants.SP_KEY_PASSIVE_LOCATION_UPDATES_INTERVAL,
-                IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL);
+                IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL_DEFAULT);
 
         assertThat(followLocationChanges, is(true));
         assertThat(useGps, is(true));
         assertThat(runOnce, is(true));
 
-        assertThat(IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF,
+        assertThat(IgnitedLocationConstants.LOCATION_UPDATES_DISTANCE_DIFF_DEFAULT,
                 equalTo(locUpdatesDistDiff));
-        assertThat(IgnitedLocationConstants.LOCATION_UPDATES_INTERVAL, equalTo(locUpdatesInterval));
-        assertThat(IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF,
+        assertThat(IgnitedLocationConstants.LOCATION_UPDATES_INTERVAL_DEFAULT,
+                equalTo(locUpdatesInterval));
+        assertThat(IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_DISTANCE_DIFF_DEFAULT,
                 equalTo(passiveLocUpdatesDistDiff));
-        assertThat(IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL,
+        assertThat(IgnitedLocationConstants.PASSIVE_LOCATION_UPDATES_INTERVAL_DEFAULT,
                 equalTo(passiveLocUpdatesInterval));
     }
 
@@ -292,9 +293,9 @@ public class IgnitedLocationManagerTest {
     public void shouldUpdateDataOnNewLocation() {
         resume();
 
-        int countBefore = activity.getAdapter().getCount();
+        int countBefore = activity.getLocationCount();
         sendMockLocationBroadcast(LocationManager.GPS_PROVIDER);
-        int countAfter = activity.getAdapter().getCount();
+        int countAfter = activity.getLocationCount();
         assertThat(countAfter, equalTo(++countBefore));
     }
 
