@@ -16,7 +16,6 @@
 
 package com.github.ignition.location.utils;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +28,6 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.github.ignition.location.annotations.IgnitedLocation;
