@@ -16,6 +16,8 @@
 
 package com.github.ignition.location.utils;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import android.app.PendingIntent;
@@ -27,6 +29,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.github.ignition.location.annotations.IgnitedLocation;
@@ -100,6 +103,11 @@ public class IgnitedGingerbreadLastLocationFinder implements ILastLocationFinder
             if (location != null) {
                 float accuracy = location.getAccuracy();
                 long time = location.getTime();
+
+                // Workaround to this bug: http://code.google.com/p/android/issues/detail?id=23937
+                if (new Date(time).after(new Date(System.currentTimeMillis()))) {
+                    time -= 1000 * 60 * 60 * 24;
+                }
 
                 if (((time > minTime) && (accuracy < bestAccuracy))) {
                     bestResult = location;
