@@ -66,6 +66,7 @@ public class IgnitedLocationSampleActivity extends MapActivity {
     private LayoutInflater inflater;
     private TextView waitForGpsFix;
     private TextView minBatteryLevel;
+    private ViewGroup viewGroup;
 
     // MUST BE OVERRIDDEN OR IGNITION LOCATION WON'T WORK!
     @Override
@@ -115,7 +116,7 @@ public class IgnitedLocationSampleActivity extends MapActivity {
     @Override
     public boolean onIgnitedLocationChanged(Location newLocation) {
         displayNewLocation();
-        update();
+        update(newLocation);
 
         return true;
     }
@@ -153,11 +154,11 @@ public class IgnitedLocationSampleActivity extends MapActivity {
     // return super.onKeyDown(keyCode, event);
     // }
 
-    private void update() {
+    private void update(Location location) {
         mapOverlays.clear();
-        int lat = (int) (currentLocation.getLatitude() * 1E6);
-        int lon = (int) (currentLocation.getLongitude() * 1E6);
-        final float accuracy = currentLocation.getAccuracy();
+        int lat = (int) (location.getLatitude() * 1E6);
+        int lon = (int) (location.getLongitude() * 1E6);
+        final float accuracy = location.getAccuracy();
         GeoPoint point = new GeoPoint(lat, lon);
         mapController.setCenter(point);
         mapOverlays.add(new AccuracyCircleOverlay(point, accuracy));
@@ -204,6 +205,7 @@ public class IgnitedLocationSampleActivity extends MapActivity {
 
     private void displayNewLocation() {
         View block = inflater.inflate(R.layout.location_view, null);
+        block.setTag(currentLocation);
 
         TextView time = (TextView) block.findViewById(R.id.val_time);
         TextView accuracy = (TextView) block.findViewById(R.id.val_acc);
@@ -227,10 +229,12 @@ public class IgnitedLocationSampleActivity extends MapActivity {
         block.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                update();
+                update((Location) v.getTag());
             }
         });
-        ViewGroup viewGroup = (ViewGroup) findViewById(R.id.content);
+        if (viewGroup == null) {
+            viewGroup = (ViewGroup) findViewById(R.id.content);
+        }
         viewGroup.addView(block, 0);
     }
 
